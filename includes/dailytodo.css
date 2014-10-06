@@ -1,0 +1,150 @@
+/**
+* Daily Todo CSS file
+*/
+/* 
+    Created on : Aug 19, 2014, 1:00:45 PM
+    Author     : dmullin
+*/
+
+body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+th, h3, .label {
+    font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+    font-weight: normal;
+}
+
+.hidden {
+    display: none;
+}
+
+input:focus, textarea:focus {
+    outline: rgba(239, 43, 45, .5) auto 5px;
+}
+
+#shade {
+    position: absolute;
+    background: -webkit-radial-gradient(center, ellipse cover, rgba(255,255,255,0.56) 0%,rgba(100,101,105,1) 100%);
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+
+}
+
+
+table#master {
+    font-size: 12px;
+    border-collapse: collapse;
+}
+
+th {
+    font-size: 1.2em;
+    padding: 0.3em;
+}
+
+th.colHeader:hover {
+    cursor: pointer;
+}
+
+tr.task /*td*/:hover {
+    cursor: pointer;
+    outline: rgba(239, 43, 45, .5) auto 5px;
+}
+
+.tr_even td {
+    /* background-color: #cef; */
+}
+
+td {
+    padding: 0.2em 0.5em;
+}
+
+tr.newGroup, tr.newGroup td {
+    /* height: 3em;
+    vertical-align: bottom; */
+    border-top: 1px solid rgb(239, 43, 45);
+    margin-top: 3px;
+    padding-top: 10px;
+}
+
+/* Detail view */
+#detail {
+    position: fixed;
+    z-index: 10;
+    background-color: white;
+    top: 50%;
+    left: 50%;
+    height: 10em;
+    width: 40em;
+    margin-top: -5em;
+    margin-left: -20em;
+    border: 1px solid rgba(239, 43, 45, .75);
+    box-shadow: 5px 5px #ccc;
+}
+
+#detail_header {
+    margin: 0.3em;
+    font-size: 1em;
+}
+
+#detail_close {
+    display: inline-block;
+    position: absolute;
+    right: 0.3em;
+    top: 0.3em;
+    font-weight: bold;
+}
+
+#detail_close:hover {
+    cursor: pointer;
+}
+
+#detail_body {
+    display: block;
+    position: relative;
+    padding: 0.3em;
+    border-top: 1px solid rgba(239, 43, 45, .2);
+}
+
+#detail .field {
+    position: absolute;
+    display: inline-block;    
+}
+
+#priority {
+    text-align: right;
+}
+
+#detail_date {
+    top: 0.3em;
+    left: 0.3em;
+}
+
+#detail_priority {
+    top: 0.3em;
+    left: 12em;
+}
+
+#detail_status {
+    top: 0.3em;
+    left: 22em;
+}
+
+#detail_notes {
+    top: 2em;
+}
+
+#detail_notes p {
+    margin: 0;
+}
+
+.status_soon {
+    color: rgb(255,158, 49);
+    font-weight: bold;
+}
+
+.status_late {
+    color: rgb(239, 43, 45);
+    font-weight: bold;
+}

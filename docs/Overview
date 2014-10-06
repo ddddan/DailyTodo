@@ -1,0 +1,19 @@
+SYNOPSIS
+========
+Generate a to-do list containing new, modified, and current to-do items.  This can be used to generate a daily email, or viewed on a web page.  
+On the web page, allow comments to be added, priorities and time estimates to be assigned, and tasks to be sorted by client, task, priority, and due date.
+
+PROJECT OUTLINE (PHP / JS)
+===============
+PHP     1. Retrieve the list of tasks from the ProjectManagerSQL DB
+PHP     2. Allow URL to send email vs. view in browser
+PHP/JS  3. Web page:
+JS          a. Allow sorting and filtering by:
+                - client
+                - task
+                - due date
+                    o Calendar input?
+JS (H5?)    e. Calendar view
+JS (H5?)    f. Allow tagging (how?)
+            g. Fun: tag cloud
+
