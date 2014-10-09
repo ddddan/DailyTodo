@@ -60,6 +60,14 @@ td {
     padding: 0.2em 0.5em;
 }
 
+td span:hover {
+    cursor: default;
+}
+
+td span.outside {
+    color: rgba(100,101,105, .8);
+}
+
 tr.newGroup, tr.newGroup td {
     /* height: 3em;
     vertical-align: bottom; */

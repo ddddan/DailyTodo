@@ -39,7 +39,7 @@ function LoadResults() {
             // Read data
             var data = JSON.parse(this.response);
 
-            ws.taskfData = data.filtered_data;
+            ws.taskData = data.data;
             ws.taskfCols = data.filtered_columns;
             ws.taskCols = data.columns;
 
@@ -83,7 +83,7 @@ function saveDetails() {
     // Save details to local storage
     var row = document.getElementById('detail').getAttribute('data-rowid');
     for (var field in ws.newDetails.data) {
-        ws.taskfData[row][field] = ws.newDetails.data[field];
+        ws.taskData[row][field] = ws.newDetails.data[field];
     }
 
     // Refresh
@@ -144,7 +144,7 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
     var eTRow = document.createElement('tr');
 
     // See above for explanation
-    var data = (allData ? ws.taskData : ws.taskfData);
+    var data = (allData ? ws.taskData : ws.taskData);
     if (!!sortKey) {
         data = data.deepSortAlpha.apply(data, sortOrder);
     }
@@ -184,12 +184,12 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
             }
 
             // Use task abbreviations
-            val = ws.taskAbbr[val] || val;
             data[i][ws.taskfCols[j]] = val;
 
             // Formatting replacements (but do not update data)
             if (!!val) {
                 val = val.replace(/\n/g, '<br>').replace(/(\<br\>|^)\*/g, '$1&bull;');
+                val = val.replace(/\(\(/, '<span class="outside">(' ).replace(/\)\)/, ')</span>');
             }
 
             // Colouring for status
@@ -233,7 +233,7 @@ function cbColumnHeader(evt) {
 function cbDetail(evt) {
     var id = evt.currentTarget.id;
     var row = id.replace(/data_/, '');
-    var data = window.sitescriptdata.taskfData[row];
+    var data = window.sitescriptdata.taskData[row];
 
     // Reset changed status
     window.sitescriptdata.detailChanged = false;
@@ -244,7 +244,7 @@ function cbDetail(evt) {
     // Populate detail box
     var eDetail = document.getElementById('detail');
     // User defined attributes to help with tracking the request
-    eDetail.setAttribute('data-pkCampaignTaskID', data.pkCampaignTaskID);
+    eDetail.setAttribute('data-TaskID', data.TaskID);
     eDetail.setAttribute('data-rowid', row);
 
     var eHead = document.getElementById('detail_header');
@@ -327,7 +327,7 @@ function cbDetailChanged(evt) {
     ws.detailChanged = true;
 
     // Update task id
-    ws.newDetails.pkCampaignTaskID = document.getElementById('detail').getAttribute('data-pkCampaignTaskID');
+    ws.newDetails.TaskID = document.getElementById('detail').getAttribute('data-TaskID');
 
     e.value;
     ws.newDetails.data = {};

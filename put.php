@@ -37,7 +37,7 @@ $udata = json_decode($udata_all, true);
 
 // Update user data with new details
 foreach ($newdetails['data'] as $field => $value) {
-    $udata[$newdetails['pkCampaignTaskID']][$field] = $value;
+    $udata[$newdetails['TaskID']][$field] = $value;
 }
 
 $udata_string = json_encode($udata);

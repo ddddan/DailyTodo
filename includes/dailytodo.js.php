@@ -5,14 +5,12 @@
 
 window.sitescriptdata = {
     taskData : {},
-    taskfData : {},
     taskCols : {},
     taskfCols : {},
-    taskAbbr : <?php echo json_encode($task_abbr); ?>,
     SAVE_PATH: '<?php echo SAVE_PATH; ?>',
     SAVE_FILE: '<?php echo SAVE_FILE; ?>',
     sortKeys: [
-        'DueDate', 'TaskName', 'Client', 'CampaignName'
+        'DueDate', 'Docket', 'TaskName', 'Client', 'CampaignName'
     ],
     currSortKey: 'DueDate',
     detailChanged: false,
