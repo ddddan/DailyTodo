@@ -125,10 +125,26 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
 
     // document.getElementById('content').innerHTML = '<pre>' + JSON.stringify(sortOrder) + '</pre>'; return
 
+    // Create counts object for report
+    var counts = {
+        pastDue: {
+            mine: 0,
+            total: 0
+        },
+        dueSoon: {
+            mine: 0,
+            total: 0
+        },
+        onRadar: {
+            mine: 0,
+            total: 0
+        }
+    };
 
+
+    // If table element does not exist, create it; otherwise clear it out.    
     var eContent = document.getElementById('content');
 
-    // If table element does not exist, create it; otherwise clear it out.
     var eTable = document.getElementById('master');
     if (!eTable) {
         eTable = document.createElement('table');
@@ -186,18 +202,40 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
             // Use task abbreviations
             data[i][ws.taskfCols[j]] = val;
 
+
             // Formatting replacements (but do not update data)
+
             if (!!val) {
                 val = val.replace(/\n/g, '<br>').replace(/(\<br\>|^)\*/g, '$1&bull;');
-                val = val.replace(/\(\(/, '<span class="outside">(' ).replace(/\)\)/, ')</span>');
+                val = val.replace(/\(\(/, '<span class="outside">(').replace(/\)\)/, ')</span>');
             }
+
 
             // Colouring for status
             if (ws.taskfCols[j] === 'Status') {
+                // Flag tasks which are outside my control
+                var outside = false;
+                if (!!data[i].Notes && data[i].Notes.match(/\(\(/)) {
+                    outside = true;
+                }
                 if (val === 'Past Due') {
                     eTD.addClassName('status_late');
+                    counts.pastDue.total++;
+                    if (!outside) {
+                        counts.pastDue.mine++;
+                    }
+
                 } else if (val === 'Due Soon') {
                     eTD.addClassName('status_soon');
+                    counts.dueSoon.total++;
+                    if (!outside) {
+                        counts.dueSoon.mine++;
+                    }
+                } else {
+                    counts.onRadar.total++;
+                    if (!outside) {
+                        counts.onRadar.mine++;
+                    }
                 }
             }
 
@@ -215,6 +253,35 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
 
     eTable.appendChild(eTBody);
     eContent.appendChild(eTable);
+
+    DisplayCounts(counts);
+}
+
+/** 
+ * DisplayCounts(counts) - Display the total by Status
+ * 
+ * @param {type} counts - counts object created by DisplayMasterTable()
+ * @returns {undefined}
+ */
+function DisplayCounts(counts) {
+    var eCounts = document.getElementById('counts');
+
+    var total = {
+        mine: 0,
+        total: 0
+    };
+
+    for (var prop in counts) {
+        for (var owner in total) {
+            var e = document.getElementById(prop + '_' + owner);
+            e.textContent = counts[prop][owner];
+            total[owner] += counts[prop][owner];
+        }
+    }
+
+    for (var owner in total) {
+        document.getElementById('totalCount_' + owner).textContent = total[owner];
+    }
 }
 
 // CALLBACKS

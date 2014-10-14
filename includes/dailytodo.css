@@ -156,3 +156,25 @@ tr.newGroup, tr.newGroup td {
     color: rgb(239, 43, 45);
     font-weight: bold;
 }
+
+/* Counts */
+#counts {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 15em;
+    border: 1px solid black;
+}
+
+
+table#tcounts {
+    border-collapse: collapse;
+}
+
+td.counts_value {
+    text-align: right;
+}
+
+tr#totalCountRow td {
+    border-top: 1px solid #ccc;
+}

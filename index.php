@@ -32,6 +32,39 @@ and open the template in the editor.
     <body>
         <div id="content">
             <div id="shade" class="hidden"></div>
+            <div id="counts">
+                <table id="tcounts">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                             <th>My Tasks</th>
+                             <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="counts_label status_late" id="pastDue_label">Past Due</td>
+                            <td class="counts_value status_late" id="pastDue_mine"></td>
+                            <td class="counts_value status_late" id="pastDue_total"></td>
+                        </tr>
+                        <tr>
+                            <td class="counts_label status_soon" id="dueSoon_label">Due Soon</td>
+                            <td class="counts_value status_soon" id="dueSoon_mine"></td>
+                            <td class="counts_value status_soon" id="dueSoon_total"></td>
+                        </tr>
+                        <tr>
+                            <td class="counts_label" id="onRadar_label">On Radar</td>
+                            <td class="counts_value" id="onRadar_mine"></td>
+                            <td class="counts_value" id="onRadar_total"></td>
+                        </tr>
+                        <tr id="totalCountRow">
+                            <td class="counts_label" id="totalCount_label">Total</td>
+                            <td class="counts_value" id="totalCount_mine"></td>
+                            <td class="counts_value" id="totalCount_total"></td>
+                        </tr
+                    </tbody>
+                </table>
+            </div>
             <div id="detail" class="hidden">
                 <h3 id="detail_header"></h3>
                 <div id="detail_close">X</div>
@@ -51,6 +84,7 @@ and open the template in the editor.
                     <div id="detail_notes" class="field">
                         <p class="label">Notes</p>
                         <textarea id="notes" name="Notes" cols="70" rows="4"></textarea>
+                    </div>
                 </div>
             </div>
         </div>
