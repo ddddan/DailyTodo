@@ -4,6 +4,13 @@ Array.prototype.deepSortAlpha = function () {
     var itm, L = arguments.length, order = arguments;
 
     var alphaSort = function (a, b) {
+        if (!a && !b) {
+            return 0;
+        } else if (!a) {
+            return 1;
+        } else if (!b) {
+            return -1;
+        }
         a = a.toLowerCase();
         b = b.toLowerCase();
         if (a == b)

@@ -21,6 +21,12 @@ error_reporting(E_ALL);
 $user_info = explode('\\', filter_input(INPUT_SERVER, 'REMOTE_USER'));
 $user = end($user_info);
 
+// Check for Raw parameter - will just dump unfiltered results
+$dump_raw = filter_input(INPUT_GET, 'dumpraw');
+if (!empty($dump_raw) && $dump_raw != 'raw') {
+    $dump_raw = null;
+}
+
 $udata_all = file_get_contents('udata/' . $user);
 $udata = json_decode($udata_all, true);
 
@@ -59,9 +65,18 @@ try {
     $sth = $db->prepare($query);
     $sth->bindValue(':user', $user);
     $sth->execute();
+    
+    // If $dump_raw is set, just echo the raw output
+    if ($dump_raw) {
+        header('Content-Type: text/plain');
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            print_r($row); exit;
+        }
+        exit;
+    }
 
     while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-
+        
 // Add client name
         $clientName = '';
         if (isset($clients[$row['fkClientID']])) {
@@ -69,8 +84,6 @@ try {
         }
 
 // Map the tasks listed in $task_mapping into rows of the new array
-        //reset($task_mapping);
-        // while (list($key, $value) = each($task_mapping)) {
         foreach ($task_mapping_list as $map) {
             $keep = array();
             // Skip completed tasks

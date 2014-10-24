@@ -22,19 +22,13 @@ define('SAVE_FILE', 'dailytodo_status.json');
 $columns_to_filter = array(
     'TaskID' => 1
 );
-       
-$task_mapping = array(
-    'DataPlanDue' => 'Data Plan',
-    'SampleDataDue' => 'IPR',
-    'DataToPrime' => 'Instructions to Prime',
-    'FinalDataDue' => 'Final Data Due',
-    'NetCounts' => 'Net Counts'
-);    
 
 $task_mapping_list = array(
     array('key' => 'DataPlanDue', 'value' => 'Data Plan'),
+    array('key' => 'ClientDataDue', 'value' => 'Client Data Due'),
     array('key' => 'SampleDataDue', 'value' => 'IPR'),
     array('key' => 'DataToPrime', 'value' => 'Instructions to Prime'),
     array('key' => 'FinalDataDue', 'value' => 'Final Data Due'),
     array('key' => 'NetCounts', 'value' => 'Net Counts')
+    
 );

@@ -379,7 +379,7 @@ function cbCloseDetail() {
 function cbInputPriority(evt) {
     var e = evt.currentTarget;
     if (!e.value) {
-        e.value = 1;
+    //    e.value = 1;
     }
 }
 
@@ -397,7 +397,9 @@ function cbDetailChanged(evt) {
     ws.newDetails.TaskID = document.getElementById('detail').getAttribute('data-TaskID');
 
     e.value;
-    ws.newDetails.data = {};
+    if (!ws.newDetails.data) {
+        ws.newDetails.data = {};
+    }
     ws.newDetails.data[e.getAttribute('name')] = e.value;
 
 }
