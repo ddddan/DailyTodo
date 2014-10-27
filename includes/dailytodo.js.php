@@ -4,6 +4,7 @@
  */
 
 window.sitescriptdata = {
+    debug : <?php echo ($debug ? 'true' : 'false'); ?>,
     taskData : {},
     taskCols : {},
     taskfCols : {},
@@ -13,6 +14,9 @@ window.sitescriptdata = {
         'DueDate', 'Docket', 'TaskName', 'Client', 'CampaignName', 'Priority'
     ],
     currSortKey: 'DueDate',
+    priorityList: [],
+    
+    // Detail edit
     detailChanged: false,
     inputFields: [
         'priority', 'notes'

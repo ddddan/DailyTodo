@@ -15,6 +15,12 @@ require_once('includes/functions.php');
 
 date_default_timezone_set('America/Toronto');
 error_reporting(E_ALL);
+
+// Debug mode
+$debug = false;
+if (filter_input(INPUT_GET, 'debug') === 'dm20141027') {
+    $debug = true;
+}
 ?>
 
 <!DOCTYPE html>
@@ -37,8 +43,8 @@ and open the template in the editor.
                     <thead>
                         <tr>
                             <th>Status</th>
-                             <th>My Tasks</th>
-                             <th>Total</th>
+                            <th>My Tasks</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -80,6 +86,10 @@ and open the template in the editor.
                     <div id="detail_priority" class="field">
                         <span class="label">Priority: </span>
                         <input id="priority" name="Priority" type="number" min="0" max="99">
+                        <div id="detail_priority_adjust" class="subfield hidden">
+                            <input id="priority_adjust" name="AdjustPriorities" type="checkbox" checked />
+                            <label for="priority_adjust">Adjust Priorities?</label>
+                        </div>
                     </div>
                     <div id="detail_notes" class="field">
                         <p class="label">Notes</p>
@@ -87,8 +97,12 @@ and open the template in the editor.
                     </div>
                 </div>
             </div>
+            <div id="maintable"></div>
+            <?php if ($debug) { ?>
+                <div id="debug"></div>
+            <?php } ?>
         </div>
-        <?php require_once ('includes/dailytodo.js.php'); // Script needing PHP     ?>
+        <?php require_once ('includes/dailytodo.js.php'); // Script needing PHP      ?>
         <script type="text/javascript" src="includes/functions.js"></script>
         <script type="text/javascript" src="includes/dailytodo.js"></script>
     </body>

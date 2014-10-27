@@ -120,6 +120,11 @@ tr.newGroup, tr.newGroup td {
     display: inline-block;    
 }
 
+#detail .subfield {
+    font-size: .7em;
+    z-index: 2;
+}
+
 #priority {
     text-align: right;
 }
@@ -177,4 +182,13 @@ td.counts_value {
 
 tr#totalCountRow td {
     border-top: 1px solid #ccc;
+}
+
+/* DEBUG */
+#debug {
+    background-color: black;
+    font-family: monospace;
+    color: #ccc;
+    width: 100%;
+    border: outset #ccc;
 }

@@ -86,6 +86,14 @@ function saveDetails() {
         ws.taskData[row][field] = ws.newDetails.data[field];
     }
 
+    // Update priorities if applicable
+    if (!!ws.newDetails.data['Priority']) {
+        for (var i = 0; i < ws.taskData.length; i++) {
+
+        }
+    }
+
+
     // Refresh
     DisplayMasterTable();
 
@@ -94,6 +102,47 @@ function saveDetails() {
 
 }
 
+/**
+ * GetPriorities() - Examine the task data to establish the list of priorities.
+ * 
+ * @returns {undefined}
+ */
+function GetPriorities() {
+    var priorityHash = [];
+    var tData = window.sitescriptdata.taskData;
+    // Read in priorities from task data
+    for (var i = 0; i < tData.length; i++) {
+        // Check for existence of priority field for this record
+        if (!tData[i].hasOwnProperty('Priority') || !tData[i].Priority) {
+            continue;
+        }
+        // Check for existence in priorityHash already 
+        var p = tData[i].Priority;
+        if (!priorityHash[p * 10])
+        {
+            // Use multiple of 10 to help avoid collisions
+            priorityHash[p * 10] = i;
+        } else {
+            // Try to use due date as a tiebreaker; if not, use fifo
+            // TODO: Add 3+ way tiebreaking
+            var oldTask = priorityHash[p * 10];
+            if (tData[oldTask].DueDate > tData[i].DueDate) {
+                priorityHash[p * 10 + 1] = oldTask;
+                priorityHash[p * 10] = i;
+            } else {
+                priorityHash[p * 10 + 1] = i;
+            }
+        }
+    }
+    // Set priority order and re-assign priorities to tasks
+    var priorityList = [];
+    p = 1;
+    priorityHash.forEach(function(element, index, array) {
+        tData[element].Priority = p.toString();
+        priorityList[p++] = element;
+    });
+
+}
 
 /**
  * DisplayMasterTable() - Display the master table (raw data)
@@ -123,7 +172,13 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
         }
     }
 
-    // document.getElementById('content').innerHTML = '<pre>' + JSON.stringify(sortOrder) + '</pre>'; return
+    if (ws.debug) {
+        // document.getElementById('debug').innerHTML = '<pre>' + JSON.stringify(sortOrder) + '</pre>'; 
+        document.getElementById('debug').innerHTML = '<pre>' + JSON.stringify(ws.taskData) + '</pre>';
+    }
+    
+    // Update priorities
+    GetPriorities();
 
     // Create counts object for report
     var counts = {
@@ -143,7 +198,7 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
 
 
     // If table element does not exist, create it; otherwise clear it out.    
-    var eContent = document.getElementById('content');
+    var eContent = document.getElementById('maintable');
 
     var eTable = document.getElementById('master');
     if (!eTable) {
@@ -300,10 +355,11 @@ function cbColumnHeader(evt) {
 function cbDetail(evt) {
     var id = evt.currentTarget.id;
     var row = id.replace(/data_/, '');
-    var data = window.sitescriptdata.taskData[row];
+    var ws = window.sitescriptdata;
+    var data = ws.taskData[row];
 
     // Reset changed status
-    window.sitescriptdata.detailChanged = false;
+    ws.detailChanged = false;
 
     // Display shaded background (lightbox effect)
     document.getElementById('shade').removeClassName('hidden');
@@ -332,13 +388,16 @@ function cbDetail(evt) {
     // Add Priority
     var ePriority = document.getElementById('priority');
     ePriority.value = data.Priority || '';
-    ePriority.addEventListener('click', cbInputPriority);
     ePriority.addEventListener('change', cbDetailChanged);
+
+    // Hide Priority Adjust
+    var ePriorityAdjust = document.getElementById('detail_priority_adjust');
+    ePriorityAdjust.addClassName('hidden');
+    ePriorityAdjust.addEventListener('change', cbDetailChanged);
 
     // Add Notes
     var eNotes = document.getElementById('notes');
     eNotes.value = data.Notes || '';
-    // ePriorityValue.addEventListener('click', cbInputNotes);
     eNotes.addEventListener('change', cbDetailChanged);
 
     // Display detail box
@@ -379,7 +438,7 @@ function cbCloseDetail() {
 function cbInputPriority(evt) {
     var e = evt.currentTarget;
     if (!e.value) {
-    //    e.value = 1;
+        //    e.value = 1;
     }
 }
 
@@ -401,6 +460,13 @@ function cbDetailChanged(evt) {
         ws.newDetails.data = {};
     }
     ws.newDetails.data[e.getAttribute('name')] = e.value;
+
+    // Handle priority adjustment
+    if (e.id === 'priority') {
+        // Show the adjust priorities checkbox
+        document.getElementById('priority_adjust').setAttribute('checked', true);
+        // document.getElementById('detail_priority_adjust').removeClassName('hidden'); 
+    }
 
 }
 
