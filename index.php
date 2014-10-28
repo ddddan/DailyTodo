@@ -67,9 +67,21 @@ and open the template in the editor.
                             <td class="counts_label" id="totalCount_label">Total</td>
                             <td class="counts_value" id="totalCount_mine"></td>
                             <td class="counts_value" id="totalCount_total"></td>
-                        </tr
+                        </tr>
+                        <tr id="buttonsRow">
+                            <td colspan="100%">
+                                <!--<a id="add_task" href="#" class="button grey">Add Task</a>-->
+                                <a id="refresh" href="#" class="button grey">Refresh</a>
+                            </td>
+                        </tr>
+                        <tr id="timeRow">
+                            <td colspan="100%">
+                                <p class="timestamp">Last refresh: <?php echo date('Y-m-d H:i:s');?></p>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
+
             </div>
             <div id="detail" class="hidden">
                 <h3 id="detail_header"></h3>

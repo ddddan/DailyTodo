@@ -470,10 +470,26 @@ function cbDetailChanged(evt) {
 
 }
 
+/**
+ * cbRefresh - refresh the screen
+ * 
+ * @returns {undefined}
+ */
+function cbRefresh() {
+    location.reload();
+}
+
 
 
 window.onload = function () {
+    // Load and display results
     LoadResults();
-    // DisplayMasterTable('DueDate');
+    
+    // Add event handler for "Add Task" and "Refresh" Buttons
+    // document.getElementById('add_task').addEventListener(cbAddTask);
+    document.getElementById('refresh').addEventListener('click', cbRefresh);
+    
+    // Add timed refresh
+    window.setInterval(cbRefresh, 300000);
 };
 
