@@ -118,19 +118,19 @@ function GetPriorities() {
         }
         // Check for existence in priorityHash already 
         var p = tData[i].Priority;
-        if (!priorityHash[p * 10])
+        if (!priorityHash[p * 100])
         {
-            // Use multiple of 10 to help avoid collisions
-            priorityHash[p * 10] = i;
+            // Use multiple of 100 to help avoid collisions
+            priorityHash[p * 100] = i;
         } else {
             // Try to use due date as a tiebreaker; if not, use fifo
             // TODO: Add 3+ way tiebreaking
-            var oldTask = priorityHash[p * 10];
+            var oldTask = priorityHash[p * 100];
             if (tData[oldTask].DueDate > tData[i].DueDate) {
-                priorityHash[p * 10 + 1] = oldTask;
-                priorityHash[p * 10] = i;
+                priorityHash[p * 100 + 1] = oldTask;
+                priorityHash[p * 100] = i;
             } else {
-                priorityHash[p * 10 + 1] = i;
+                priorityHash[p * 100 + 1] = i;
             }
         }
     }
@@ -174,7 +174,7 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
 
     if (ws.debug) {
         // document.getElementById('debug').innerHTML = '<pre>' + JSON.stringify(sortOrder) + '</pre>'; 
-        document.getElementById('debug').innerHTML = '<pre>' + JSON.stringify(ws.taskData) + '</pre>';
+        //document.getElementById('debug').innerHTML = '<pre>' + JSON.stringify(ws.taskData) + '</pre>';
     }
     
     // Update priorities
@@ -357,6 +357,10 @@ function cbDetail(evt) {
     var row = id.replace(/data_/, '');
     var ws = window.sitescriptdata;
     var data = ws.taskData[row];
+    
+    // Set popup active to prevent refresh
+    ws.popupActive = true;
+    window.clearInterval(ws.refreshTimer);
 
     // Reset changed status
     ws.detailChanged = false;
@@ -425,6 +429,11 @@ function cbCloseDetail() {
     if (!!ws.detailChanged) {
         saveDetails();
     }
+    
+    // Clear popup active to allow refresh and reset timer
+    ws.popupActive = false;
+    window.clearInterval(ws.refreshTimer);
+    ws.refreshTimer = window.setInterval(cbRefresh, 300000);
 
 }
 
@@ -476,12 +485,21 @@ function cbDetailChanged(evt) {
  * @returns {undefined}
  */
 function cbRefresh() {
-    location.reload();
+    if (!window.sitescriptdata.popupActive) {
+        location.reload();
+    }
 }
 
 
 
 window.onload = function () {
+    var ws = window.sitescriptdata;
+    if (!!ws.debug) {
+    //    document.getElementById('debug').innerHTML = '<pre>' + JSON.stringify(ws.taskTypes, undefined, 4) + '</pre>';
+    //    exit;
+    }
+    
+    
     // Load and display results
     LoadResults();
     
@@ -490,6 +508,6 @@ window.onload = function () {
     document.getElementById('refresh').addEventListener('click', cbRefresh);
     
     // Add timed refresh
-    window.setInterval(cbRefresh, 300000);
+    ws.refreshTimer = window.setInterval(cbRefresh, 300000);
 };
 

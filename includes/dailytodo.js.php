@@ -5,6 +5,7 @@
 
 window.sitescriptdata = {
     debug : <?php echo ($debug ? 'true' : 'false'); ?>,
+    // taskTypes : <?php echo json_encode($task_types); ?>,
     taskData : {},
     taskCols : {},
     taskfCols : {},
@@ -16,6 +17,8 @@ window.sitescriptdata = {
     currSortKey: 'DueDate',
     priorityList: [],
     
+    popupActive: false,
+    refreshTimer: null,
     // Detail edit
     detailChanged: false,
     inputFields: [
