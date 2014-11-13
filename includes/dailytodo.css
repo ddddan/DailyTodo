@@ -77,28 +77,42 @@ tr.newGroup, tr.newGroup td {
     padding-top: 10px;
 }
 
-/* Detail view */
-#detail {
+/* Status */
+.status_soon {
+    color: rgb(255,158, 49);
+    font-weight: bold;
+}
+
+.status_late {
+    color: rgb(239, 43, 45);
+    font-weight: bold;
+}
+
+/* Popups */
+.popup {
     position: fixed;
     z-index: 10;
     background-color: white;
     top: 50%;
     left: 50%;
-    height: 10em;
-    width: 40em;
-    margin-top: -5em;
-    margin-left: -20em;
     border: 1px solid rgba(239, 43, 45, .75);
     box-shadow: 1px 1px #666;
     padding: 0.2em;
 }
 
-#detail_header {
+.popup_header {
     margin: 0.3em;
     font-size: 1em;
 }
 
-#detail_close {
+.popup_body {
+    display: block;
+    position: relative;
+    padding: 0.3em;
+    border-top: 1px solid rgba(239, 43, 45, .2);
+}
+
+.popup_close {
     display: inline-block;
     position: absolute;
     right: 0.3em;
@@ -106,25 +120,27 @@ tr.newGroup, tr.newGroup td {
     font-weight: bold;
 }
 
-#detail_close:hover {
+.popup_close:hover {
     cursor: pointer;
 }
 
-#detail_body {
-    display: block;
-    position: relative;
-    padding: 0.3em;
-    border-top: 1px solid rgba(239, 43, 45, .2);
-}
-
-#detail .field {
+.popup .field {
     position: absolute;
     display: inline-block;    
 }
 
-#detail .subfield {
+.popup .subfield {
     font-size: .7em;
     z-index: 2;
+}
+
+/* Detail view */
+
+#detail {
+    height: 10em;
+    width: 40em;
+    margin-top: -5em;
+    margin-left: -20em;
 }
 
 #priority {
@@ -154,15 +170,44 @@ tr.newGroup, tr.newGroup td {
     margin: 0;
 }
 
-.status_soon {
-    color: rgb(255,158, 49);
-    font-weight: bold;
+/* Add Task */
+#addtask {
+    height: 15em;
+    width: 40em;
+    margin-top: -5em;
+    margin-left: -20em;
 }
 
-.status_late {
-    color: rgb(239, 43, 45);
-    font-weight: bold;
+#addtask_grid {
+    border-collapse: collapse;
+    padding: 0 1.0em 0 0;
 }
+
+#addtask_notes td {
+    margin-top: 1em;
+}
+
+.addtask_label {
+    text-align: right;
+    font-size: 80%;
+}
+
+#addtask_buttons {
+    text-align: center;
+}
+
+#newtask_submit {
+    margin-right: 1em;
+}
+
+#newtask_name {
+    width: 99%;
+}
+
+#newtask_docket {
+    width: 4em;
+}
+
 
 /* Counts */
 #counts {
@@ -258,7 +303,7 @@ a.button {
     display: inline-block;
     /* font: bold 12px Arial, Helvetica, Clean, sans-serif; */
     /* margin: 0 25px 25px 0; */
-    padding: 0.5em 1em;
+    padding: 0.3em 0.5em;
     position: relative;
     text-align: center;
     text-decoration: none;

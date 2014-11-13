@@ -5,14 +5,16 @@
 
 window.sitescriptdata = {
     debug : <?php echo ($debug ? 'true' : 'false'); ?>,
-    // taskTypes : <?php echo json_encode($task_types); ?>,
+    taskTypes : <?php echo json_encode($task_types); ?>,
+    lastUTaskID : 0,
+    clients: {},
     taskData : {},
     taskCols : {},
     taskfCols : {},
     SAVE_PATH: '<?php echo SAVE_PATH; ?>',
     SAVE_FILE: '<?php echo SAVE_FILE; ?>',
     sortKeys: [
-        'DueDate', 'Docket', 'TaskName', 'Client', 'CampaignName', 'Priority'
+        'DueDate', 'Type', 'Docket', 'TaskName', 'Client', 'CampaignName', 'Priority'
     ],
     currSortKey: 'DueDate',
     priorityList: [],

@@ -36,7 +36,7 @@ $db = db_connect() or die("Can't connect to database.");
 
 // Retrieve client list
 $clients = array();
-$query_clients = 'select pkClientID, ClientName, ClientShortName from tblClients where Active = 1';
+$query_clients = 'select pkClientID, ClientName, ClientShortName from tblClients where TimeFoxLookup is not null';
 try {
     $sth_clients = $db->prepare($query_clients);
     $sth_clients->execute();
@@ -44,12 +44,12 @@ try {
         $clients[$row['pkClientID']] = $row;
     }
 } catch (PDOException $e) {
+    http_response_code(500);
     echo "\nPDO::errorInfo():\n";
     print_r($db->errorInfo());
 }
 
 // Retrieve task list from server
-// Currently using the 'spoToDoList' stored procedure
 // $filtered_data contains data with some low-urgency tasks filtered out (see includes/defs.php)
 // echo '<pre>' . print_r($_SERVER, true) . '</pre>'; exit;
 
@@ -65,18 +65,19 @@ try {
     $sth = $db->prepare($query);
     $sth->bindValue(':user', $user);
     $sth->execute();
-    
+
     // If $dump_raw is set, just echo the raw output
     if ($dump_raw) {
         header('Content-Type: text/plain');
         while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            print_r($row); exit;
+            print_r($row);
+            exit;
         }
         exit;
     }
 
     while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-        
+
 // Add client name
         $clientName = '';
         if (isset($clients[$row['fkClientID']])) {
@@ -88,19 +89,22 @@ try {
             $keep = array();
             // Skip completed tasks
             extract($map);
-            
+
             if ($row[$key . '_Comp'] !== '0') {
                 continue;
             }
 
             $taskID = $row[$key . '_TaskID'];
 
+            // Set task type symbol
+            // See defs.php for sequence
+            $keep['Type'] = ($value == 'Net Counts' ? 4 : 1);
+
             $keep['Docket'] = $row['pkDocketNum'];
             $keep['TaskID'] = $taskID;
             $keep['Client'] = $clientName;
             $keep['CampaignName'] = $row['Project'];
             $keep['TaskName'] = $value;
-
 
 // Status - based on relationship to today's date;
             $dueDate = date_create($row[$key]);
@@ -110,7 +114,7 @@ try {
             $keep['Status'] = '';
             $diff = date_diff($today, $dueDate);
             $days = $diff->format('%r%a');
-            
+
             if ($days > MAX_DAYS_OUT) { // Filter anything beyond that date
                 break;
             } else if ($days < 0) {
@@ -140,6 +144,7 @@ try {
         }
     }
 } catch (PDOException $e) {
+    http_response_code(500);
     echo "\nPDO::errorInfo():\n";
     print_r($db->errorInfo());
 }
@@ -172,6 +177,7 @@ if (!empty($user_columns)) {
 // Output the data (for reading by AJAX)
 
 $results_array = array(
+    'clients' => $clients,
     'data' => $data,
     'columns' => $columns,
     'filtered_columns' => $filtered_columns

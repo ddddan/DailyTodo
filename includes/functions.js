@@ -1,4 +1,8 @@
 /* Auxiliary functions for dailytodo */
+function isNumeric (obj) {
+    return !isNaN(parseFloat(obj)) && isFinite(obj);
+};
+
 
 Array.prototype.deepSortAlpha = function () {
     var itm, L = arguments.length, order = arguments;
@@ -11,8 +15,10 @@ Array.prototype.deepSortAlpha = function () {
         } else if (!b) {
             return -1;
         }
-        a = a.toLowerCase();
-        b = b.toLowerCase();
+        if (!isNumeric(a)) {
+            a = a.toLowerCase();
+            b = b.toLowerCase();
+        }
         if (a == b)
             return 0;
         return a > b ? 1 : -1;
@@ -32,17 +38,17 @@ Array.prototype.deepSortAlpha = function () {
     return this;
 }
 
-Element.prototype.hasClassName = function(name) {
+Element.prototype.hasClassName = function (name) {
     return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(this.className);
 };
 
-Element.prototype.addClassName = function(name) {
+Element.prototype.addClassName = function (name) {
     if (!this.hasClassName(name)) {
         this.className = this.className ? [this.className, name].join(' ') : name;
     }
 };
 
-Element.prototype.removeClassName = function(name) {
+Element.prototype.removeClassName = function (name) {
     if (this.hasClassName(name)) {
         var c = this.className;
         this.className = c.replace(new RegExp("(?:^|\\s+)" + name + "(?!\\S)", "g"), "");
@@ -50,7 +56,7 @@ Element.prototype.removeClassName = function(name) {
 };
 
 // Remove options from a select dropdown
-Element.prototype.removeOptions = function() {
+Element.prototype.removeOptions = function () {
     for (var i = this.options.length - 1; i >= 0; i--) {
         this.remove(i);
     }

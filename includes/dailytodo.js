@@ -19,6 +19,41 @@ function sortByKey(array, key, sortDesc) {
 }
 
 /**
+ * AddDynamic() - Populates dynamic fields
+ * 
+ * @returns {undefined}
+ */
+function AddDynamic() {
+    var ws = window.sitescriptdata;
+    // Task types
+    var e = document.getElementById('newtask_type');
+    for (var i = 1; i < ws.taskTypes.length; i++) {
+        if (!!ws.taskTypes[i].in_cp) {
+            continue;
+        }
+        var eOption = document.createElement('option');
+        eOption.setAttribute('value', i);
+        eOption.textContent = ws.taskTypes[i].type_name;
+        e.appendChild(eOption);
+    }
+    // Client names
+    // Create list
+    var clientList = [{value: 0, name: 'Blakely House'}]; // Default is internal
+    for(i in ws.clients) {
+        clientList.push({value: i, name: ws.clients[i].ClientName});
+    }
+    clientList = clientList.deepSortAlpha.apply(clientList, ['name']);
+    e = document.getElementById('newtask_client');
+    for (i = 0; i < clientList.length; i++) {
+        var eOption = document.createElement('option');
+        eOption.setAttribute('value', clientList[i].id);
+        eOption.textContent = clientList[i].name;
+        e.appendChild(eOption);
+    }
+
+}
+
+/**
  * LoadResults() - Load the results via ajax
  * 
  */
@@ -42,6 +77,17 @@ function LoadResults() {
             ws.taskData = data.data;
             ws.taskfCols = data.filtered_columns;
             ws.taskCols = data.columns;
+            ws.clients = data.clients;
+
+            // Set lastUTaskID - the last user task id to increment when creating tasks
+            for (var i = 0; i < ws.taskData.length; i++) {
+                if (!ws.taskTypes[ws.taskData[i].Type].in_cp && ws.taskData[i].TaskID > ws.lastUTaskID) {
+                    ws.lastUTaskID = ws.taskData[i].TaskID;
+                }
+            }
+            
+            // Populate dynamic options (e.g. task types)
+            AddDynamic();
 
             // Display table
             DisplayMasterTable('DueDate');
@@ -137,7 +183,7 @@ function GetPriorities() {
     // Set priority order and re-assign priorities to tasks
     var priorityList = [];
     p = 1;
-    priorityHash.forEach(function(element, index, array) {
+    priorityHash.forEach(function (element, index, array) {
         tData[element].Priority = p.toString();
         priorityList[p++] = element;
     });
@@ -176,7 +222,7 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
         // document.getElementById('debug').innerHTML = '<pre>' + JSON.stringify(sortOrder) + '</pre>'; 
         //document.getElementById('debug').innerHTML = '<pre>' + JSON.stringify(ws.taskData) + '</pre>';
     }
-    
+
     // Update priorities
     GetPriorities();
 
@@ -250,7 +296,7 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
             var eTD = document.createElement('td');
             // Clean up dates
             var val = data[i][ws.taskfCols[j]];
-            if (!!val) {
+            if (!!val && !isNumeric(val)) {
                 val = val.replace(/ 00:00:00\.000/, '');
             }
 
@@ -260,9 +306,14 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
 
             // Formatting replacements (but do not update data)
 
-            if (!!val) {
+            if (!!val && !isNumeric(val)) {
                 val = val.replace(/\n/g, '<br>').replace(/(\<br\>|^)\*/g, '$1&bull;');
                 val = val.replace(/\(\(/, '<span class="outside">(').replace(/\)\)/, ')</span>');
+            }
+
+            // Replace Type with Type Symbol
+            if (ws.taskfCols[j] === 'Type') {
+                val = ws.taskTypes[val].symbol;
             }
 
 
@@ -357,7 +408,7 @@ function cbDetail(evt) {
     var row = id.replace(/data_/, '');
     var ws = window.sitescriptdata;
     var data = ws.taskData[row];
-    
+
     // Set popup active to prevent refresh
     ws.popupActive = true;
     window.clearInterval(ws.refreshTimer);
@@ -429,7 +480,7 @@ function cbCloseDetail() {
     if (!!ws.detailChanged) {
         saveDetails();
     }
-    
+
     // Clear popup active to allow refresh and reset timer
     ws.popupActive = false;
     window.clearInterval(ws.refreshTimer);
@@ -478,6 +529,50 @@ function cbDetailChanged(evt) {
     }
 
 }
+/**
+ * cbAddTask - Allow user to add a User Task
+ * 
+ * @returns {undefined}
+ */
+function cbAddTask() {
+    var ws = window.sitescriptdata;
+
+    // Set popup active flag to prevent refresh
+    ws.popupActive = true;
+    window.clearInterval(ws.refreshTimer);
+
+    // Show popup
+    document.getElementById('addtask').removeClassName('hidden');
+
+    // Display shaded background (lightbox effect)
+    document.getElementById('shade').removeClassName('hidden');
+
+
+    // Set callback for close button 
+    document.getElementById('addtask_close').addEventListener('click', cbCloseAddTask);
+}
+
+/**
+ * 
+ * cbCloseAddTask - Close the Add Task popu
+ * 
+ * @returns {undefined}
+ */
+function cbCloseAddTask() {
+    var ws = window.sitescriptdata;
+
+    // Hide popup
+    document.getElementById('addtask').addClassName('hidden');
+
+    // Remove shade / lightbox effect
+    document.getElementById('shade').addClassName('hidden');
+
+    // Clear popup active flag to allow refresh
+    ws.popupActive = false;
+    window.clearInterval(ws.refreshTimer);
+
+
+}
 
 /**
  * cbRefresh - refresh the screen
@@ -495,19 +590,20 @@ function cbRefresh() {
 window.onload = function () {
     var ws = window.sitescriptdata;
     if (!!ws.debug) {
-    //    document.getElementById('debug').innerHTML = '<pre>' + JSON.stringify(ws.taskTypes, undefined, 4) + '</pre>';
-    //    exit;
+        //    document.getElementById('debug').innerHTML = '<pre>' + JSON.stringify(ws.taskTypes, undefined, 4) + '</pre>';
+        //    exit;
     }
-    
-    
+
     // Load and display results
     LoadResults();
-    
+
     // Add event handler for "Add Task" and "Refresh" Buttons
-    // document.getElementById('add_task').addEventListener(cbAddTask);
+    document.getElementById('add_task').addEventListener('click', cbAddTask);
     document.getElementById('refresh').addEventListener('click', cbRefresh);
-    
+
     // Add timed refresh
     ws.refreshTimer = window.setInterval(cbRefresh, 300000);
+
+
 };
 

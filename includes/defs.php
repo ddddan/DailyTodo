@@ -23,12 +23,66 @@ $columns_to_filter = array(
     'TaskID' => 1
 );
 
-$task_mapping_list = array(
-    array('key' => 'DataPlanDue', 'value' => 'Data Plan'),
-    array('key' => 'ClientDataDue', 'value' => 'Client Data Due'),
-    array('key' => 'SampleDataDue', 'value' => 'IPR'),
-    array('key' => 'DataToPrime', 'value' => 'Instructions to Prime'),
-    array('key' => 'FinalDataDue', 'value' => 'Final Data Due'),
-    array('key' => 'NetCounts', 'value' => 'Net Counts')
+$task_mapping_list = [
+    ['key' => 'DataPlanDue', 'value' => 'Data Plan'],
+    ['key' => 'ClientDataDue', 'value' => 'Client Data Due'],
+    ['key' => 'SampleDataDue', 'value' => 'IPR'],
+    ['key' => 'DataToPrime', 'value' => 'Instructions to Prime'],
+    ['key' => 'FinalDataDue', 'value' => 'Final Data Due'],
+    ['key' => 'NetCounts', 'value' => 'Net Counts']
     
-);
+   ];
+
+$task_types = [
+    [],
+    ['symbol' => 'D', 'type_name' => 'Data Work', 'in_cp' => true,
+        'steps' => null],
+    ['symbol' => 'A', 'type_name' => 'Analysis', 'in_cp' => false,
+        'steps' => [
+            [
+                'name' => 'Email Summary Sent',
+                'days_out' => -6
+                ],
+            [
+                'name' => '1st Review',
+                'days_out' => -5
+                ],
+            [
+                'name' => '2nd Review',
+                'days_out' => -3
+                ],
+            [
+                'name' => 'Write-up',
+                'days_out' => -1
+                ],
+            [
+                'name' => 'Presentation',
+                'days_out' => 0
+                ],
+        ]],
+    ['symbol' => 'R', 'type_name' => 'Results Reporting', 'in_cp' => false,
+                'steps' => [
+            [
+                'name' => 'Import & Update',
+                'days_out' => -3
+                ],
+            [
+                'name' => 'Reports',
+                'days_out' => -2
+                ],
+            [
+                'name' => 'Response Curves',
+                'days_out' => -1
+                ],
+            [
+                'name' => 'Issue Reports',
+                'days_out' => 0
+                ],
+        ]],
+    ['symbol' => 'N', 'type_name' => 'Net Counts', 'in_cp' => true,
+        'steps' => null],
+    ['symbol' => 'I', 'type_name' => 'Insights Work', 'in_cp' => false,
+        'steps' => null],
+    ['symbol' => 'O', 'type_name' => 'Other', 'in_cp' => false,
+        'steps' => null],
+];

@@ -70,23 +70,23 @@ and open the template in the editor.
                         </tr>
                         <tr id="buttonsRow">
                             <td colspan="100%">
-                                <!--<a id="add_task" href="#" class="button grey">Add Task</a>-->
+                                <a id="add_task" href="#" class="button grey">Add Task</a>
                                 <a id="refresh" href="#" class="button grey">Refresh</a>
                             </td>
                         </tr>
                         <tr id="timeRow">
                             <td colspan="100%">
-                                <p class="timestamp">Last refresh: <?php echo date('Y-m-d H:i:s');?></p>
+                                <p class="timestamp">Last refresh: <?php echo date('Y-m-d H:i:s'); ?></p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
 
             </div>
-            <div id="detail" class="hidden">
-                <h3 id="detail_header"></h3>
-                <div id="detail_close">X</div>
-                <div id="detail_body">
+            <div id="detail" class="popup hidden">
+                <h3 id="detail_header" class="popup_header"></h3>
+                <div id="detail_close" class="popup_close">X</div>
+                <div id="detail_body" class="popup_body">
                     <div id="detail_date" class="field">
                         <span class="label">Due Date: </span>   
                         <span id="due_date_value"></span>
@@ -108,6 +108,77 @@ and open the template in the editor.
                         <textarea id="notes" name="Notes" cols="70" rows="4"></textarea>
                     </div>
                 </div>
+            </div>
+            <div id="addtask" class="popup hidden">
+                <h3 id="addtask_header" class="popup_header">Add New Task</h3>
+                <div id="addtask_close" class="popup_close">X</div>
+                <div id="addtask_body" class="popup_body">
+                    <table id="addtask_grid">
+                        <tbody>
+                            <tr>
+                                <td class="addtask_label">
+                                    <label for="newtask_type">Task&nbsp;Type:</label>
+                                </td>
+                                <td class="addtask_value">
+                                    <select id="newtask_type" name="newtask_type">
+                                        <option default value="-1">Please select....</option>
+                                    </select>
+                                </td>
+                                <td class="addtask_label">
+                                    <label for="newtask_name">Task&nbsp;Name:</label>
+                                </td>
+                                <td class="addtask_value">
+                                    <input type="text" id="newtask_name" name="newtask_name">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="addtask_label">
+                                    <label for="newtask_docket">Docket:</label>
+                                </td>
+                                <td class="addtask_value">
+                                    <input type="text" id="newtask_docket" name="newtask_docket">
+                                </td>
+                                <td class="addtask_label">
+                                    <label for="newtask_client">Client:</label>
+                                </td>
+                                <td class="addtask_value">
+                                    <select id="newtask_client" name="newtask_client">
+                                        <option default value="-1">Please select....</option>
+                                    </select>                        
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="addtask_label">
+                                    <label for="newtask_duedate">Due&nbsp;Date:</label>
+                                </td>
+                                <td class="addtask_value">
+                                    <input type="date" id="newtask_duedate" name="newtask_duedate">
+                                </td>
+                                <td class="addtask_label">
+                                    <label for="newtask_client">Priority:</label>
+                                </td>
+                                <td class="addtask_value">
+                                    <input id="newtask_priority" name="Priority" type="number" min="0" max="99">                     
+                                </td>
+                            </tr>
+                            <tr id="addtask_notes">
+                                <td class="addtask_label">
+                                    <label for="newtask_notes">Notes:</label>
+                                </td>
+                                <td class=addtask_value colspan="3">
+                                    <textarea id="newtask_notes" name="Notes" cols="70" rows="4"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="100%" id="addtask_buttons">
+                                    <a id="newtask_submit" href="#" class="button grey">Submit</a>
+                                    <a id="newtask_cancel" href="#" class="button grey">Cancel</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
             <div id="maintable"></div>
             <?php if ($debug) { ?>
