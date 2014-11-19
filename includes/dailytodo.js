@@ -39,7 +39,7 @@ function AddDynamic() {
     // Client names
     // Create list
     var clientList = [{value: 0, name: 'Blakely House'}]; // Default is internal
-    for(i in ws.clients) {
+    for (i in ws.clients) {
         clientList.push({value: i, name: ws.clients[i].ClientName});
     }
     clientList = clientList.deepSortAlpha.apply(clientList, ['name']);
@@ -60,10 +60,16 @@ function AddDynamic() {
 function LoadResults() {
     var ws = window.sitescriptdata;
 
+    // Show loading spinner
+    document.getElementById('loading').removeClassName('hidden');
+
     // AJAX request to load the data 
     var xmlhttp = new XMLHttpRequest;
     xmlhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
+            // Hide spinner
+            document.getElementById('loading').addClassName('hidden');
+
             // Handle errors
             if (this.status !== 200) {
                 debugLog(this.statusText);
@@ -85,7 +91,7 @@ function LoadResults() {
                     ws.lastUTaskID = ws.taskData[i].TaskID;
                 }
             }
-            
+
             // Populate dynamic options (e.g. task types)
             AddDynamic();
 
@@ -110,6 +116,9 @@ function LoadResults() {
 
 function saveDetails() {
     var ws = window.sitescriptdata;
+
+    // Show spinner
+    document.getElementById('submitting').removeClassName('hidden');
 
     // AJAX request to load the data 
     var xmlhttp = new XMLHttpRequest;
@@ -138,6 +147,10 @@ function saveDetails() {
 
         }
     }
+
+    // Hide spinner
+    document.getElementById('submitting').addClassName('hidden');
+
 
 
     // Refresh
@@ -271,7 +284,7 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
         eTH.id = 'th_' + ws.taskfCols[i];
         eTH.textContent = ws.taskfCols[i];
         if (sortOrder.indexOf(ws.taskfCols[i]) !== -1) {
-            eTH.setAttribute('class', 'colHeader')
+            eTH.setAttribute('class', 'colHeader');
             eTH.addEventListener('click', cbColumnHeader);
         }
         eTRow.appendChild(eTH);
@@ -389,6 +402,43 @@ function DisplayCounts(counts) {
         document.getElementById('totalCount_' + owner).textContent = total[owner];
     }
 }
+/**
+ * DisplayAddTaskError(errors) - Display any validation errors in adding tasks
+ * 
+ * @param {type} errors - array of errors to display
+ * @returns {undefined}
+ */
+function DisplayAddTaskErrors(errors) {
+    var eMsg = document.getElementById('addtask_message');
+    var eList = document.createElement('ul');
+
+    errors.map(function (err) {
+        var eErr = document.createElement('li');
+        eErr.textContent = err;
+        eList.appendChild(eErr);
+    });
+    eMsg.appendChild(eList);
+}
+
+/**
+ * ClearTaskMessage(msg) - clears anything in the 'addtask_message' div and 
+ * replaces it with <msg> if defined
+ * 
+ * @param {type} msg - any message to display
+ * @returns {undefined}
+ */
+function ClearTaskMessage(msg) {
+    var eMsg = document.getElementById('addtask_message');
+    while (eMsg.firstChild) {
+        eMsg.removeChild(eMsg.firstChild);
+    }
+    if (!!msg) {
+        var ePara = document.createElement('p');
+        ePara.textContent = msg;
+        eMsg.appendChild(ePara);
+    }
+}
+
 
 // CALLBACKS
 function cbColumnHeader(evt) {
@@ -547,14 +597,71 @@ function cbAddTask() {
     // Display shaded background (lightbox effect)
     document.getElementById('shade').removeClassName('hidden');
 
+    // TODO: Add polyfill for date picker (FF, IE)
 
-    // Set callback for close button 
+    // Set callbacks
+    document.getElementById('addtask_submit').addEventListener('click', cbSubmitAddTask);
+    document.getElementById('addtask_cancel').addEventListener('click', cbCloseAddTask);
     document.getElementById('addtask_close').addEventListener('click', cbCloseAddTask);
 }
 
 /**
  * 
- * cbCloseAddTask - Close the Add Task popu
+ * cbSubmitAddTask - Attempt to submit the new task
+ * 
+ * @returns {undefined}
+ */
+function cbSubmitAddTask() {
+    var ws = window.sitescriptdata;
+
+    // Remove any existing message or errors
+    ClearTaskMessage();
+
+    // Validation
+    var errorList = [];
+    // Required fields: tasktype
+    if (document.getElementById('newtask_type').value === '-1') {
+        errorList.push('Please select a task type');
+    }
+    // Required fields: name
+    if (!document.getElementById('newtask_name').value) {
+        errorList.push('Please enter a task name');
+    }
+
+    // Required fields: client
+    if (document.getElementById('newtask_client').value === '-1') {
+        errorList.push('Please select a client name (use Blakely House for internal work)');
+    }
+
+    // Required fields: duedate
+    if (!document.getElementById('newtask_duedate').value) {
+        errorList.push('Please select a due date');
+    }
+
+
+    // If necessary, display errors (and halt submission
+    if (!!errorList.length) {
+        DisplayAddTaskErrors(errorList);
+        return; // Not submitted
+    }
+
+    // Show spinner
+    document.getElementById('submitting').removeClassName('hidden');
+
+    // Submit to put.php
+
+    // Close window
+    cbCloseAddTask();
+
+    // Hide spinner
+    document.getElementById('submitting').addClassName('hidden');
+
+
+}
+
+/**
+ * 
+ * cbCloseAddTask - Close the Add Task popup
  * 
  * @returns {undefined}
  */
@@ -571,6 +678,22 @@ function cbCloseAddTask() {
     ws.popupActive = false;
     window.clearInterval(ws.refreshTimer);
 
+    // Clear fields
+    // Clear selects
+    document.getElementById('newtask_type').value = -1;
+    document.getElementById('newtask_client').value = -1;
+
+    // Clear inputs (iteratively)
+    var inputs = ['name', 'duedate', 'docket', 'client', 'priority', 'notes'];
+    inputs.map(function (name) {
+        document.getElementById('newtask_' + name).value = '';
+    });
+
+    //Clear notes
+    // document.getElementById('newtask_notes').textContent = '';
+
+    // Clear errors and reset the message div
+    ClearTaskMessage('Enter your task details below.');
 
 }
 

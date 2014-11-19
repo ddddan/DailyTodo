@@ -33,6 +33,30 @@ input:focus, textarea:focus {
 
 }
 
+/* AJAX Spinners */
+.ajax {
+    position: fixed;
+    background: white;
+    border: 1px solid #ccc;
+    height: 6em;
+    width: 20em;
+    margin-top: -3em;
+    margin-left: -10em;
+    z-index: 15;
+    top: 50%;
+    left: 50%;
+}
+
+.ajax h3 {
+    text-align: center;
+}
+
+.ajax img {
+    display: block;
+    margin: 0 auto;
+    width: 16px;
+}
+
 
 table#master {
     font-size: 12px;
@@ -172,9 +196,9 @@ tr.newGroup, tr.newGroup td {
 
 /* Add Task */
 #addtask {
-    height: 15em;
+    height: 25em;
     width: 40em;
-    margin-top: -5em;
+    margin-top: -12.5em;
     margin-left: -20em;
 }
 

@@ -38,6 +38,14 @@ and open the template in the editor.
     <body>
         <div id="content">
             <div id="shade" class="hidden"></div>
+            <div id="loading" class="ajax hidden">
+                <h3>Loading...</h3>
+                <img src="img/ajax-loader.gif" alt="(via AJAX)" />
+            </div>
+            <div id="submitting" class="ajax hidden">
+                <h3>Submitting...</h3>
+                <img src="img/ajax-loader.gif" alt="(via AJAX)" />
+            </div>
             <div id="counts">
                 <table id="tcounts">
                     <thead>
@@ -113,70 +121,75 @@ and open the template in the editor.
                 <h3 id="addtask_header" class="popup_header">Add New Task</h3>
                 <div id="addtask_close" class="popup_close">X</div>
                 <div id="addtask_body" class="popup_body">
-                    <table id="addtask_grid">
-                        <tbody>
-                            <tr>
-                                <td class="addtask_label">
-                                    <label for="newtask_type">Task&nbsp;Type:</label>
-                                </td>
-                                <td class="addtask_value">
-                                    <select id="newtask_type" name="newtask_type">
-                                        <option default value="-1">Please select....</option>
-                                    </select>
-                                </td>
-                                <td class="addtask_label">
-                                    <label for="newtask_name">Task&nbsp;Name:</label>
-                                </td>
-                                <td class="addtask_value">
-                                    <input type="text" id="newtask_name" name="newtask_name">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="addtask_label">
-                                    <label for="newtask_docket">Docket:</label>
-                                </td>
-                                <td class="addtask_value">
-                                    <input type="text" id="newtask_docket" name="newtask_docket">
-                                </td>
-                                <td class="addtask_label">
-                                    <label for="newtask_client">Client:</label>
-                                </td>
-                                <td class="addtask_value">
-                                    <select id="newtask_client" name="newtask_client">
-                                        <option default value="-1">Please select....</option>
-                                    </select>                        
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="addtask_label">
-                                    <label for="newtask_duedate">Due&nbsp;Date:</label>
-                                </td>
-                                <td class="addtask_value">
-                                    <input type="date" id="newtask_duedate" name="newtask_duedate">
-                                </td>
-                                <td class="addtask_label">
-                                    <label for="newtask_client">Priority:</label>
-                                </td>
-                                <td class="addtask_value">
-                                    <input id="newtask_priority" name="Priority" type="number" min="0" max="99">                     
-                                </td>
-                            </tr>
-                            <tr id="addtask_notes">
-                                <td class="addtask_label">
-                                    <label for="newtask_notes">Notes:</label>
-                                </td>
-                                <td class=addtask_value colspan="3">
-                                    <textarea id="newtask_notes" name="Notes" cols="70" rows="4"></textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="100%" id="addtask_buttons">
-                                    <a id="newtask_submit" href="#" class="button grey">Submit</a>
-                                    <a id="newtask_cancel" href="#" class="button grey">Cancel</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div id="addtask_message">
+                        <p>Enter your task details below.</p>
+                    </div>
+                    <form id="newtask">
+                        <table id="addtask_grid">
+                            <tbody>
+                                <tr>
+                                    <td class="addtask_label">
+                                        <label for="newtask_type">Task&nbsp;Type:</label>
+                                    </td>
+                                    <td class="addtask_value">
+                                        <select id="newtask_type" name="newtask_type">
+                                            <option default value="-1">Please select....</option>
+                                        </select>
+                                    </td>
+                                    <td class="addtask_label">
+                                        <label for="newtask_name">Task&nbsp;Name:</label>
+                                    </td>
+                                    <td class="addtask_value">
+                                        <input type="text" id="newtask_name" name="newtask_name" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="addtask_label">
+                                        <label for="newtask_docket">Docket:</label>
+                                    </td>
+                                    <td class="addtask_value">
+                                        <input type="text" id="newtask_docket" name="newtask_docket">
+                                    </td>
+                                    <td class="addtask_label">
+                                        <label for="newtask_client">Client:</label>
+                                    </td>
+                                    <td class="addtask_value">
+                                        <select id="newtask_client" name="newtask_client">
+                                            <option default value="-1">Please select....</option>
+                                        </select>                        
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="addtask_label">
+                                        <label for="newtask_duedate">Due&nbsp;Date:</label>
+                                    </td>
+                                    <td class="addtask_value">
+                                        <input type="date" id="newtask_duedate" name="newtask_duedate" required>
+                                    </td>
+                                    <td class="addtask_label">
+                                        <label for="newtask_client">Priority:</label>
+                                    </td>
+                                    <td class="addtask_value">
+                                        <input id="newtask_priority" name="Priority" type="number" min="0" max="99">                     
+                                    </td>
+                                </tr>
+                                <tr id="addtask_notes">
+                                    <td class="addtask_label">
+                                        <label for="newtask_notes">Notes:</label>
+                                    </td>
+                                    <td class=addtask_value colspan="3">
+                                        <textarea id="newtask_notes" name="Notes" cols="70" rows="4"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="100%" id="addtask_buttons">
+                                        <a id="addtask_submit" href="#" class="button grey">Submit</a>
+                                        <a id="addtask_cancel" href="#" class="button grey">Cancel</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
                 </div>
 
             </div>
