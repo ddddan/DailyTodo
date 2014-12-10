@@ -196,10 +196,28 @@ tr.newGroup, tr.newGroup td {
 
 /* Add Task */
 #addtask {
-    height: 25em;
+    height: 21em;
     width: 40em;
-    margin-top: -12.5em;
+    margin-top: -11.5em;
     margin-left: -20em;
+}
+
+#addtask_message {
+    height: 5em;
+    overflow: hidden;
+}
+
+#addtask_message p {
+    margin: 0.2em;
+}
+
+#addtask_message ul {
+    margin: 0.2em;
+    font-size: .8em;
+}
+
+.error {
+    color: rgb(239, 43, 45);
 }
 
 #addtask_grid {
@@ -208,7 +226,7 @@ tr.newGroup, tr.newGroup td {
 }
 
 #addtask_notes td {
-    margin-top: 1em;
+    padding-top: 0.4em;
 }
 
 .addtask_label {

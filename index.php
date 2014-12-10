@@ -132,7 +132,7 @@ and open the template in the editor.
                                         <label for="newtask_type">Task&nbsp;Type:</label>
                                     </td>
                                     <td class="addtask_value">
-                                        <select id="newtask_type" name="newtask_type">
+                                        <select id="newtask_type" name="newtask_type" class="newtask_value">
                                             <option default value="-1">Please select....</option>
                                         </select>
                                     </td>
@@ -140,7 +140,7 @@ and open the template in the editor.
                                         <label for="newtask_name">Task&nbsp;Name:</label>
                                     </td>
                                     <td class="addtask_value">
-                                        <input type="text" id="newtask_name" name="newtask_name" required>
+                                        <input type="text" id="newtask_taskName" name="newtask_taskName" class="newtask_value" required>
                                     </td>
                                 </tr>
                                 <tr>
@@ -148,13 +148,13 @@ and open the template in the editor.
                                         <label for="newtask_docket">Docket:</label>
                                     </td>
                                     <td class="addtask_value">
-                                        <input type="text" id="newtask_docket" name="newtask_docket">
+                                        <input type="text" id="newtask_docket" name="newtask_docket" class="newtask_value">
                                     </td>
                                     <td class="addtask_label">
                                         <label for="newtask_client">Client:</label>
                                     </td>
                                     <td class="addtask_value">
-                                        <select id="newtask_client" name="newtask_client">
+                                        <select id="newtask_client" name="newtask_client" class="newtask_value">
                                             <option default value="-1">Please select....</option>
                                         </select>                        
                                     </td>
@@ -164,13 +164,13 @@ and open the template in the editor.
                                         <label for="newtask_duedate">Due&nbsp;Date:</label>
                                     </td>
                                     <td class="addtask_value">
-                                        <input type="date" id="newtask_duedate" name="newtask_duedate" required>
+                                        <input type="date" id="newtask_dueDate" name="newtask_dueDate" class="newtask_value" required>
                                     </td>
                                     <td class="addtask_label">
                                         <label for="newtask_client">Priority:</label>
                                     </td>
                                     <td class="addtask_value">
-                                        <input id="newtask_priority" name="Priority" type="number" min="0" max="99">                     
+                                        <input id="newtask_priority" name="Priority" type="number" min="0" max="99" class="newtask_value">                     
                                     </td>
                                 </tr>
                                 <tr id="addtask_notes">
@@ -178,7 +178,7 @@ and open the template in the editor.
                                         <label for="newtask_notes">Notes:</label>
                                     </td>
                                     <td class=addtask_value colspan="3">
-                                        <textarea id="newtask_notes" name="Notes" cols="70" rows="4"></textarea>
+                                        <textarea id="newtask_notes" name="Notes" cols="70" rows="4" class="newtask_value"></textarea>
                                     </td>
                                 </tr>
                                 <tr>

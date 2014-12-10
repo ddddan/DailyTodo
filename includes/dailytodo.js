@@ -38,15 +38,15 @@ function AddDynamic() {
     }
     // Client names
     // Create list
-    var clientList = [{value: 0, name: 'Blakely House'}]; // Default is internal
+    var clientList = [{value: 'Internal', name: 'Blakely House'}]; // Default is internal
     for (i in ws.clients) {
-        clientList.push({value: i, name: ws.clients[i].ClientName});
+        clientList.push({value: ws.clients[i].ClientShortName, name: ws.clients[i].ClientName});
     }
     clientList = clientList.deepSortAlpha.apply(clientList, ['name']);
     e = document.getElementById('newtask_client');
     for (i = 0; i < clientList.length; i++) {
         var eOption = document.createElement('option');
-        eOption.setAttribute('value', clientList[i].id);
+        eOption.value = clientList[i].value;
         eOption.textContent = clientList[i].name;
         e.appendChild(eOption);
     }
@@ -109,13 +109,17 @@ function LoadResults() {
 }
 
 /**
- * saveDetails() - Save results (user-defined) via ajax
+ * saveTask() - Save task details (user-defined) via ajax
  *  
  * @returns {undefined}
  */
 
-function saveDetails() {
+function saveTask() {
     var ws = window.sitescriptdata;
+    // Ensure an update has been triggered
+    if (!ws.taskUpdate.type) {
+        return;
+    }
 
     // Show spinner
     document.getElementById('submitting').removeClassName('hidden');
@@ -125,7 +129,15 @@ function saveDetails() {
 
     xmlhttp.open('POST', 'put.php', false);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send('newdetails=' + JSON.stringify(ws.newDetails));
+    
+    if (ws.taskUpdate.type === 'update') {
+        xmlhttp.send('newdetails=' + JSON.stringify(ws.taskUpdate));
+    } else if (ws.taskUpdate.type === 'newtask') {
+        xmlhttp.send('newtask=' + JSON.stringify(ws.taskUpdate));
+    } else {
+        alert('ERROR: saveTask(): Invalid request.  Please contact technical support');
+        return;
+    }
 
     // Failure
     if (xmlhttp.status !== 200) {
@@ -136,16 +148,21 @@ function saveDetails() {
     // Success
 
     // Save details to local storage
-    var row = document.getElementById('detail').getAttribute('data-rowid');
-    for (var field in ws.newDetails.data) {
-        ws.taskData[row][field] = ws.newDetails.data[field];
+    var row;
+    if (ws.taskData.type === 'update') { 
+        row = document.getElementById('detail').getAttribute('data-rowid');
+    } else {
+        row = ws.taskData.length;
+        ws.taskData[row] = {};
     }
+    for (var field in ws.taskUpdate.data) {
+        ws.taskData[row][field] = ws.taskUpdate.data[field];
+    }
+    
 
     // Update priorities if applicable
-    if (!!ws.newDetails.data['Priority']) {
-        for (var i = 0; i < ws.taskData.length; i++) {
-
-        }
+    if (!!ws.taskUpdate.data['Priority']) {
+        GetPriorities();
     }
 
     // Hide spinner
@@ -157,7 +174,7 @@ function saveDetails() {
     DisplayMasterTable();
 
     ws.detailChanged = false;
-    ws.newDetails = {};
+    ws.taskUpdate = {};
 
 }
 
@@ -410,6 +427,9 @@ function DisplayCounts(counts) {
  */
 function DisplayAddTaskErrors(errors) {
     var eMsg = document.getElementById('addtask_message');
+    
+    var eInst = document.createElement('p');
+    eInst.textContent = 'Please correct the following errors:';
     var eList = document.createElement('ul');
 
     errors.map(function (err) {
@@ -417,7 +437,9 @@ function DisplayAddTaskErrors(errors) {
         eErr.textContent = err;
         eList.appendChild(eErr);
     });
+    eMsg.appendChild(eInst);
     eMsg.appendChild(eList);
+    eMsg.addClassName('error');
 }
 
 /**
@@ -437,6 +459,7 @@ function ClearTaskMessage(msg) {
         ePara.textContent = msg;
         eMsg.appendChild(ePara);
     }
+    eMsg.removeClassName('error');
 }
 
 
@@ -476,7 +499,8 @@ function cbDetail(evt) {
     eDetail.setAttribute('data-rowid', row);
 
     var eHead = document.getElementById('detail_header');
-    eHead.textContent = data.CampaignName + ' - ' + data.TaskName;
+    var name = (data.CampaignName !== '-' ? data.CampaignName : data.Client);
+    eHead.textContent = name + ' - ' + data.TaskName;
 
     // Add due date
     document.getElementById('due_date_value').textContent = data.DueDate;
@@ -528,7 +552,7 @@ function cbCloseDetail() {
 
     // TODO: Display pinwheel
     if (!!ws.detailChanged) {
-        saveDetails();
+        saveTask();
     }
 
     // Clear popup active to allow refresh and reset timer
@@ -563,13 +587,14 @@ function cbDetailChanged(evt) {
     ws.detailChanged = true;
 
     // Update task id
-    ws.newDetails.TaskID = document.getElementById('detail').getAttribute('data-TaskID');
+    ws.taskUpdate.TaskID = document.getElementById('detail').getAttribute('data-TaskID');
 
     e.value;
-    if (!ws.newDetails.data) {
-        ws.newDetails.data = {};
+    if (!ws.taskUpdate.data) {
+        ws.taskUpdate.type = 'update';
+        ws.taskUpdate.data = {};
     }
-    ws.newDetails.data[e.getAttribute('name')] = e.value;
+    ws.taskUpdate.data[e.getAttribute('name')] = e.value;
 
     // Handle priority adjustment
     if (e.id === 'priority') {
@@ -613,6 +638,10 @@ function cbAddTask() {
  */
 function cbSubmitAddTask() {
     var ws = window.sitescriptdata;
+    
+    ws.taskUpdate = {};
+    ws.taskUpdate.data = {};
+    ws.taskUpdate.type = 'newtask';
 
     // Remove any existing message or errors
     ClearTaskMessage();
@@ -624,7 +653,7 @@ function cbSubmitAddTask() {
         errorList.push('Please select a task type');
     }
     // Required fields: name
-    if (!document.getElementById('newtask_name').value) {
+    if (!document.getElementById('newtask_taskName').value) {
         errorList.push('Please enter a task name');
     }
 
@@ -634,21 +663,46 @@ function cbSubmitAddTask() {
     }
 
     // Required fields: duedate
-    if (!document.getElementById('newtask_duedate').value) {
+    if (!document.getElementById('newtask_dueDate').value) {
         errorList.push('Please select a due date');
     }
-
 
     // If necessary, display errors (and halt submission
     if (!!errorList.length) {
         DisplayAddTaskErrors(errorList);
         return; // Not submitted
     }
-
+    
+    // Calculate status
+    var today = new Date();
+    var dueDate = new Date(document.getElementById('newtask_dueDate').value);
+    var timeDiff = dueDate - today;
+    var dateDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+     var dueSoonLimit = (Math.floor(today.getDay() / 4) + 1) * 2; // Adjusted for weekends
+    if (dateDiff < 0) {
+        ws.taskUpdate.data.Status = 'Past Due';
+    } else if (dateDiff < dueSoonLimit) {
+        ws.taskUpdate.data.Status = 'Due Soon';
+    } else {
+        ws.taskUpdate.data.Status = '';
+    }
+    
+    // Temp hack: CampaignName is blank
+    ws.taskUpdate.data.CampaignName = '-';
+    
+    // Update object containing data
+    var fields = document.getElementsByClassName('newtask_value');
+    [].forEach.call(fields, function(el) {
+        var key = el.id.replace(/newtask_/, '')
+        key = key.charAt(0).toUpperCase() + key.slice(1); // Uppercase first value of fieldname
+        ws.taskUpdate.data[key] = el.value;
+    });
+    
     // Show spinner
     document.getElementById('submitting').removeClassName('hidden');
 
     // Submit to put.php
+    saveTask();
 
     // Close window
     cbCloseAddTask();
@@ -684,7 +738,7 @@ function cbCloseAddTask() {
     document.getElementById('newtask_client').value = -1;
 
     // Clear inputs (iteratively)
-    var inputs = ['name', 'duedate', 'docket', 'client', 'priority', 'notes'];
+    var inputs = ['taskName', 'dueDate', 'docket', 'client', 'priority', 'notes'];
     inputs.map(function (name) {
         document.getElementById('newtask_' + name).value = '';
     });

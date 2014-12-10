@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * put.php - Update the user file with new details
  */
 
@@ -11,15 +11,18 @@ date_default_timezone_set('America/Toronto');
 error_reporting(E_ALL);
 
 // echo '<pre>' . print_r($_POST) . '</pre>';
-
 // Parse new details
 if (!empty($newdetails = filter_input(INPUT_POST, 'newdetails'))) {
     $newdetails = json_decode($newdetails, true);
+    echo 'newdetails: <pre>' . print_r($newdetails, true) . '</pre>';
+} else if (!empty($newtask = filter_input(INPUT_POST, 'newtask'))) {
+    $newtask = json_decode($newtask, true);
+    echo 'newtask: <pre>' . print_r($newdetails, true) . '</pre>';
 } else {
-    die ("[ERROR] Nothing received");
+    die("[ERROR] Nothing received");
 }
 
-echo 'newdetails: <pre>' . print_r($newdetails, true) . '</pre>';
+
 
 // Open existing user file and import data
 // TODO: Add the following parameters:
@@ -35,9 +38,27 @@ $filename = 'udata/' . $user;
 $udata_all = file_get_contents($filename);
 $udata = json_decode($udata_all, true);
 
-// Update user data with new details
-foreach ($newdetails['data'] as $field => $value) {
-    $udata[$newdetails['TaskID']][$field] = $value;
+// If a new task, determine last user task ID and increment
+$newTaskID = date('Y') * 1000 + 1 ;
+if (!empty($newtask)) {
+    foreach ($udata as $taskID => $content) {
+        $tID = intval($taskID);
+        if (isset($content['Type']) && $tID >= $newTaskID) {
+            echo 'Content found, $tID = ' . $tID . "\n"; 
+            $newTaskID = $tID + 1;
+        }
+    }
+    
+    echo 'newTaskID = ' . $newTaskID . "<br>\n";
+
+    foreach ($newtask['data'] as $field => $value) {
+        $udata[$newTaskID][$field] = $value;
+    }
+} else {
+    // Update exisiting task with new details
+    foreach ($newdetails['data'] as $field => $value) {
+        $udata[$newdetails['TaskID']][$field] = $value;
+    }
 }
 
 $udata_string = json_encode($udata);

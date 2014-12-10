@@ -13,6 +13,8 @@ require_once('includes/functions.php');
 date_default_timezone_set('America/Toronto');
 error_reporting(E_ALL);
 
+$data = array(); // Will contain the final data set
+
 // TODO: Add the following parameters:
 // uid
 // allData - not just filtered data
@@ -30,7 +32,15 @@ if (!empty($dump_raw) && $dump_raw != 'raw') {
 $udata_all = file_get_contents('udata/' . $user);
 $udata = json_decode($udata_all, true);
 
-// TODO: Clean up user data
+// Preserve user tasks
+foreach ($udata as $prop => $value) {
+    if (isset($value['Type'])) {
+        $keep = $value;
+        $keep['TaskID'] = $prop;
+        array_push($data, $keep);
+        $udata[$prop]['keep'] = true;
+    }
+}
 
 // echo 'udata: <pre>' . print_r($udata, true) . '</pre>'; exit;
 // Connect to DB
@@ -57,9 +67,7 @@ try {
 
 $query = 'exec spoDashboard :user';
 
-$tempData = array();
-$data = array();
-$filtered_data = array();
+
 
 $user_columns = array();
 
@@ -184,8 +192,8 @@ if (!empty($user_columns)) {
 $udata_keep = array();
 foreach ($udata as $prop => $dummy) {
     if (isset($udata[$prop]['keep'])) {
-        unset ($udata_keep[$prop]['keep']);
         $udata_keep[$prop] = $udata[$prop];
+        unset ($udata_keep[$prop]['keep']);
     }
 }
 

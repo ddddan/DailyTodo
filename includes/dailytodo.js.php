@@ -27,7 +27,7 @@ window.sitescriptdata = {
         'priority', 'notes'
     ],
     detailFields: {},
-    newDetails: {}
+    taskUpdate: {}
 };
 
 </script>
