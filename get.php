@@ -30,6 +30,8 @@ if (!empty($dump_raw) && $dump_raw != 'raw') {
 $udata_all = file_get_contents('udata/' . $user);
 $udata = json_decode($udata_all, true);
 
+// TODO: Clean up user data
+
 // echo 'udata: <pre>' . print_r($udata, true) . '</pre>'; exit;
 // Connect to DB
 $db = db_connect() or die("Can't connect to database.");
@@ -126,11 +128,15 @@ try {
             // Add user data
             if (!empty($udata[$taskID])) {
                 foreach ($udata[$taskID] as $prop => $value) {
+                    if ($prop == 'keep') {
+                        continue;
+                    }
                     $keep[$prop] = $value;
                     if (!in_array($prop, $user_columns)) {
                         array_push($user_columns, $prop);
                     }
                 }
+                $udata[$taskID]['keep'] = true;
             }
 
             //echo 'DAYS: ' . $days;
@@ -140,6 +146,7 @@ try {
             array_push($data, $keep);
 
             // TEST: Only show the first outstanding task of a given campaign
+            // TODO: Re-sort by date (keep only earliest)
             break;
         }
     }
@@ -172,6 +179,21 @@ if (!empty($user_columns)) {
         }
     }
 }
+
+// Update user file (remove inactive jobs)
+$udata_keep = array();
+foreach ($udata as $prop => $dummy) {
+    if (isset($udata[$prop]['keep'])) {
+        unset ($udata_keep[$prop]['keep']);
+        $udata_keep[$prop] = $udata[$prop];
+    }
+}
+
+$udata_string = json_encode($udata_keep);
+
+// Save to file
+file_put_contents('udata/' . $user, $udata_string);
+
 
 
 // Output the data (for reading by AJAX)
