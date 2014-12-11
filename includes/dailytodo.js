@@ -552,6 +552,7 @@ function cbCloseDetail() {
 
     // TODO: Display pinwheel
     if (!!ws.detailChanged) {
+        ws.taskData.type = 'update';
         saveTask();
     }
 

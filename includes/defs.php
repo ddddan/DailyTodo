@@ -86,3 +86,16 @@ $task_types = [
     ['symbol' => 'O', 'type_name' => 'Other', 'in_cp' => false,
         'steps' => null],
 ];
+
+// Establish the default display order of the columns
+$filtered_columns_default = [
+    'Type',
+    'TaskName',
+    'Docket',
+    'Client',
+    'CampaignName',
+    'DueDate',
+    'Status',
+    'Priority',
+    'Notes'
+];

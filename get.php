@@ -166,6 +166,11 @@ try {
 
 // Create a separate columns list for easy reference
 $columns = array();
+
+// Using prescriptive filtered columns list for now
+$filtered_columns = $filtered_columns_default;
+
+/*
 $filtered_columns = array();
 
 // echo 'user_columns: <pre>' . print_r($user_columns, true) . '</pre>'; exit;
@@ -187,7 +192,7 @@ if (!empty($user_columns)) {
         }
     }
 }
-
+*/
 // Update user file (remove inactive jobs)
 $udata_keep = array();
 foreach ($udata as $prop => $dummy) {
