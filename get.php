@@ -14,7 +14,6 @@ date_default_timezone_set('America/Toronto');
 error_reporting(E_ALL);
 
 $data = array(); // Will contain the final data set
-
 // TODO: Add the following parameters:
 // uid
 // allData - not just filtered data
@@ -32,11 +31,13 @@ if (!empty($dump_raw) && $dump_raw != 'raw') {
 $udata_all = file_get_contents('udata/' . $user);
 $udata = json_decode($udata_all, true);
 
-// Preserve user tasks
+// Preserve user tasks (but suppress if completed)
 foreach ($udata as $prop => $value) {
-    if (isset($value['Type'])) {
+    if (isset($value['Type']) && (!isset($value['Completed']) || $value['Completed'] == false)) {
         $keep = $value;
         $keep['TaskID'] = $prop;
+        $keep['Status'] = get_status($keep['DueDate']);
+        
         array_push($data, $keep);
         $udata[$prop]['keep'] = true;
     }
@@ -116,23 +117,6 @@ try {
             $keep['CampaignName'] = $row['Project'];
             $keep['TaskName'] = $value;
 
-// Status - based on relationship to today's date;
-            $dueDate = date_create($row[$key]);
-            $today = date_create();
-            $keep['DueDate'] = $dueDate->format('Y-m-d');
-
-            $keep['Status'] = '';
-            $diff = date_diff($today, $dueDate);
-            $days = $diff->format('%r%a');
-
-            if ($days > MAX_DAYS_OUT) { // Filter anything beyond that date
-                break;
-            } else if ($days < 0) {
-                $keep['Status'] = 'Past Due';
-            } else if ($days < 3) {
-                $keep['Status'] = 'Due Soon';
-            }
-
             // Add user data
             if (!empty($udata[$taskID])) {
                 foreach ($udata[$taskID] as $prop => $value) {
@@ -147,9 +131,15 @@ try {
                 $udata[$taskID]['keep'] = true;
             }
 
-            //echo 'DAYS: ' . $days;
-            //echo '<pre>' . print_r($keep, true) . '</pre>';
-            //exit;
+            // Status - based on relationship to today's date;
+            $dueDate = date_create($row[$key]);
+            $keep['DueDate'] = $dueDate->format('Y-m-d');
+
+            $keep['Status'] = get_status($dueDate);
+            // Suppress any tasks beyond radar
+            if ($keep['Status'] === 'Beyond Radar') {
+                break;
+            }
 
             array_push($data, $keep);
 
@@ -171,34 +161,34 @@ $columns = array();
 $filtered_columns = $filtered_columns_default;
 
 /*
-$filtered_columns = array();
+  $filtered_columns = array();
 
-// echo 'user_columns: <pre>' . print_r($user_columns, true) . '</pre>'; exit;
+  // echo 'user_columns: <pre>' . print_r($user_columns, true) . '</pre>'; exit;
 
 
 
-while (list ($col, $val) = each($data[0])) {
-    array_push($columns, $col);
-    if (!isset($columns_to_filter[$col])) {
-        array_push($filtered_columns, $col);
-    }
-}
+  while (list ($col, $val) = each($data[0])) {
+  array_push($columns, $col);
+  if (!isset($columns_to_filter[$col])) {
+  array_push($filtered_columns, $col);
+  }
+  }
 
-if (!empty($user_columns)) {
-    foreach ($user_columns as $col) {
-        array_push($columns, $col);
-        if (!isset($columns_to_filter[$col]) && !in_array($col, $filtered_columns)) {
-            array_push($filtered_columns, $col);
-        }
-    }
-}
-*/
+  if (!empty($user_columns)) {
+  foreach ($user_columns as $col) {
+  array_push($columns, $col);
+  if (!isset($columns_to_filter[$col]) && !in_array($col, $filtered_columns)) {
+  array_push($filtered_columns, $col);
+  }
+  }
+  }
+ */
 // Update user file (remove inactive jobs)
 $udata_keep = array();
 foreach ($udata as $prop => $dummy) {
     if (isset($udata[$prop]['keep'])) {
         $udata_keep[$prop] = $udata[$prop];
-        unset ($udata_keep[$prop]['keep']);
+        unset($udata_keep[$prop]['keep']);
     }
 }
 

@@ -111,6 +111,10 @@ and open the template in the editor.
                             <label for="priority_adjust">Adjust Priorities?</label>
                         </div>
                     </div>
+                    <div id="detail_completed" class="field">
+                        <span class="label">Completed: </span>
+                        <input id="completed" name="Completed" type="checkbox" />
+                    </div>
                     <div id="detail_notes" class="field">
                         <p class="label">Notes</p>
                         <textarea id="notes" name="Notes" cols="70" rows="4"></textarea>

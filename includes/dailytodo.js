@@ -129,7 +129,7 @@ function saveTask() {
 
     xmlhttp.open('POST', 'put.php', false);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    
+
     if (ws.taskUpdate.type === 'update') {
         xmlhttp.send('newdetails=' + JSON.stringify(ws.taskUpdate));
     } else if (ws.taskUpdate.type === 'newtask') {
@@ -149,7 +149,7 @@ function saveTask() {
 
     // Save details to local storage
     var row;
-    if (ws.taskData.type === 'update') { 
+    if (ws.taskData.type === 'update') {
         row = document.getElementById('detail').getAttribute('data-rowid');
     } else {
         row = ws.taskData.length;
@@ -158,7 +158,7 @@ function saveTask() {
     for (var field in ws.taskUpdate.data) {
         ws.taskData[row][field] = ws.taskUpdate.data[field];
     }
-    
+
 
     // Update priorities if applicable
     if (!!ws.taskUpdate.data['Priority']) {
@@ -314,6 +314,11 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
     var eTBody = document.createElement('tbody');
     var sortGroup = "!!!";
     for (i = 0; i < data.length; i++) {
+        // Suppress if completed
+        if (!!data[i].Completed) {
+            continue;
+        }
+                
         eTRow = document.createElement('tr');
         eTRow.className = 'task ' + (i % 2 ? 'tr_even' : 'tr_odd');
 
@@ -427,7 +432,7 @@ function DisplayCounts(counts) {
  */
 function DisplayAddTaskErrors(errors) {
     var eMsg = document.getElementById('addtask_message');
-    
+
     var eInst = document.createElement('p');
     eInst.textContent = 'Please correct the following errors:';
     var eList = document.createElement('ul');
@@ -529,6 +534,18 @@ function cbDetail(evt) {
     eNotes.value = data.Notes || '';
     eNotes.addEventListener('change', cbDetailChanged);
 
+    // Add Completed for user tasks
+    var eCompleted = document.getElementById('detail_completed');
+    if (data.Type != 1 && data.Type != 4) {
+        if (!!data.Completed) {
+            eCompleted.checked = true;
+        }
+        eCompleted.removeClassName('hidden');
+        eCompleted.addEventListener('change', cbDetailChanged);
+    } else {
+        eCompleted.addClassName('hidden');
+    }
+
     // Display detail box
     eDetail.removeClassName('hidden');
 
@@ -583,7 +600,7 @@ function cbInputPriority(evt) {
  * @returns {undefined}
  */
 function cbDetailChanged(evt) {
-    var e = evt.currentTarget;
+    var e = evt.target;
     var ws = window.sitescriptdata;
     ws.detailChanged = true;
 
@@ -595,9 +612,14 @@ function cbDetailChanged(evt) {
         ws.taskUpdate.type = 'update';
         ws.taskUpdate.data = {};
     }
-    ws.taskUpdate.data[e.getAttribute('name')] = e.value;
+    // Handle Completed checkbox
+    if (e.id === 'completed') {
+        ws.taskUpdate.data[e.getAttribute('name')] = !!e.checked;
+    } else {
+        ws.taskUpdate.data[e.getAttribute('name')] = e.value;
+    }
 
-    // Handle priority adjustment
+// Handle priority adjustment
     if (e.id === 'priority') {
         // Show the adjust priorities checkbox
         document.getElementById('priority_adjust').setAttribute('checked', true);
@@ -639,7 +661,7 @@ function cbAddTask() {
  */
 function cbSubmitAddTask() {
     var ws = window.sitescriptdata;
-    
+
     ws.taskUpdate = {};
     ws.taskUpdate.data = {};
     ws.taskUpdate.type = 'newtask';
@@ -673,13 +695,13 @@ function cbSubmitAddTask() {
         DisplayAddTaskErrors(errorList);
         return; // Not submitted
     }
-    
+
     // Calculate status
     var today = new Date();
     var dueDate = new Date(document.getElementById('newtask_dueDate').value);
     var timeDiff = dueDate - today;
     var dateDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-     var dueSoonLimit = (Math.floor(today.getDay() / 4) + 1) * 2; // Adjusted for weekends
+    var dueSoonLimit = (Math.floor(today.getDay() / 4) + 1) * 2; // Adjusted for weekends
     if (dateDiff < 0) {
         ws.taskUpdate.data.Status = 'Past Due';
     } else if (dateDiff < dueSoonLimit) {
@@ -687,18 +709,18 @@ function cbSubmitAddTask() {
     } else {
         ws.taskUpdate.data.Status = '';
     }
-    
+
     // Temp hack: CampaignName is blank
     ws.taskUpdate.data.CampaignName = '-';
-    
+
     // Update object containing data
     var fields = document.getElementsByClassName('newtask_value');
-    [].forEach.call(fields, function(el) {
+    [].forEach.call(fields, function (el) {
         var key = el.id.replace(/newtask_/, '')
         key = key.charAt(0).toUpperCase() + key.slice(1); // Uppercase first value of fieldname
         ws.taskUpdate.data[key] = el.value;
     });
-    
+
     // Show spinner
     document.getElementById('submitting').removeClassName('hidden');
 

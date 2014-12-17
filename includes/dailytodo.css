@@ -148,7 +148,7 @@ tr.newGroup, tr.newGroup td {
     cursor: pointer;
 }
 
-.popup .field {
+.popup .field:not(.hidden){
     position: absolute;
     display: inline-block;    
 }
@@ -183,7 +183,7 @@ tr.newGroup, tr.newGroup td {
 
 #detail_status {
     top: 0.3em;
-    left: 22em;
+    left: 21em;
 }
 
 #detail_notes {
@@ -192,6 +192,10 @@ tr.newGroup, tr.newGroup td {
 
 #detail_notes p {
     margin: 0;
+}
+
+#detail_completed {
+    left: 30em;
 }
 
 /* Add Task */
