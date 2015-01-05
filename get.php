@@ -82,7 +82,7 @@ try {
         header('Content-Type: text/plain');
         while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
             print_r($row);
-            exit;
+            //exit;
         }
         exit;
     }
