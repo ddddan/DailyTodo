@@ -89,6 +89,10 @@ td span:hover {
     cursor: default;
 }
 
+td span.important {
+    color: rgb(239, 43, 45);
+}
+
 td span.outside {
     color: rgba(100,101,105, .8);
 }

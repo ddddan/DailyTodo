@@ -344,6 +344,7 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
             if (!!val && !isNumeric(val)) {
                 val = val.replace(/\n/g, '<br>').replace(/(\<br\>|^)\*/g, '$1&bull;');
                 val = val.replace(/\(\(/, '<span class="outside">(').replace(/\)\)/, ')</span>');
+                val = val.replace(/!/g, '<span class="important">!').replace(/(\<br\>)/, '</span><br>');
             }
 
             // Replace Type with Type Symbol
