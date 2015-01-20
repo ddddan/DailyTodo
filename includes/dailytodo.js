@@ -124,7 +124,13 @@ function saveTask() {
     // Show spinner
     document.getElementById('submitting').removeClassName('hidden');
 
-    // AJAX request to load the data 
+    // Update priorities if applicable -- this needs to be done before putting
+    // in case priorities have shifted around
+    if (!!ws.taskUpdate.data['Priority']) {
+        GetPriorities();
+    }
+
+    // AJAX request to save the data 
     var xmlhttp = new XMLHttpRequest;
 
     xmlhttp.open('POST', 'put.php', false);
@@ -160,11 +166,6 @@ function saveTask() {
     }
 
 
-    // Update priorities if applicable
-    if (!!ws.taskUpdate.data['Priority']) {
-        GetPriorities();
-    }
-
     // Hide spinner
     document.getElementById('submitting').addClassName('hidden');
 
@@ -194,29 +195,61 @@ function GetPriorities() {
         }
         // Check for existence in priorityHash already 
         var p = tData[i].Priority;
-        if (!priorityHash[p * 100])
+        var f = 100; // Hash factor -- ensure this is hig enough not to fail
+        var t = p * f;
+        if (priorityHash[t] === undefined)
         {
             // Use multiple of 100 to help avoid collisions
-            priorityHash[p * 100] = i;
+            priorityHash[t] = {next: null, val: i};
         } else {
-            // Try to use due date as a tiebreaker; if not, use fifo
-            // TODO: Add 3+ way tiebreaking
-            var oldTask = priorityHash[p * 100];
-            if (tData[oldTask].DueDate > tData[i].DueDate) {
-                priorityHash[p * 100 + 1] = oldTask;
-                priorityHash[p * 100] = i;
-            } else {
-                priorityHash[p * 100 + 1] = i;
+            // Collision resolution - linked list
+
+            // Find first empty slot and end of chain
+            var endChain;
+            for (var j = t; j < t + f; j++) {
+                if (priorityHash[j] === undefined) { // first empty slot
+                    break;
+                }
+                if (priorityHash[j].next === null) { // end of chain
+                    endChain = j;
+                }
+            }
+            // If (f - 1) tasks have the same priority, bail
+            if (j >= t + f - 1) {
+                alert("Please reassign priorities - too many ties!");
+                return;
+            }
+            var openSlot = j;
+
+            // Iterate through chain
+            for (; t !== null; t = priorityHash[t].next) {
+                // Compare old and new value
+                var oldTask = priorityHash[t].val;
+                if (tData[oldTask].DueDate > tData[i].DueDate) {
+                    // Before existing -- push remaining
+                    priorityHash[openSlot] = priorityHash[t];
+                    priorityHash[t] = {next: openSlot, val: i};
+                    break;
+                }
+            }
+            // If not assigned, append to end of chain
+            if (t === null) {
+                priorityHash[openSlot] = {next: null, val: i};
+                priorityHash[endChain].next = openSlot;
             }
         }
     }
+
     // Set priority order and re-assign priorities to tasks
     var priorityList = [];
     p = 1;
-    priorityHash.forEach(function (element, index, array) {
-        tData[element].Priority = p.toString();
-        priorityList[p++] = element;
-    });
+    // This has to iterate through an array of linked lists, hence the nesting
+    for(i = 0; i < Math.ceil(priorityHash.length / 100); i++ ) {
+        for (var node = priorityHash[i*100]; !!node; node = priorityHash[node.next]) {
+            tData[node.val].Priority = p.toString();
+            priorityList[p++] = node.val;
+        }
+    }
 
 }
 
@@ -318,7 +351,7 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
         if (!!data[i].Completed) {
             continue;
         }
-                
+
         eTRow = document.createElement('tr');
         eTRow.className = 'task ' + (i % 2 ? 'tr_even' : 'tr_odd');
 
@@ -806,5 +839,6 @@ window.onload = function () {
     ws.refreshTimer = window.setInterval(cbRefresh, 300000);
 
 
-};
+}
+;
 
