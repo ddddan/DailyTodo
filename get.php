@@ -28,6 +28,12 @@ if (!empty($dump_raw) && $dump_raw != 'raw') {
     $dump_raw = null;
 }
 
+// Check for debug parameters
+$debug = filter_input(INPUT_GET, 'debug');
+if (!empty($debug) && $debug != 'dm20150206') {
+    $debug = null;
+}
+
 $udata_all = file_get_contents('udata/' . $user);
 $udata = json_decode($udata_all, true);
 
@@ -37,7 +43,7 @@ foreach ($udata as $prop => $value) {
         $keep = $value;
         $keep['TaskID'] = $prop;
         $keep['Status'] = get_status($keep['DueDate']);
-        
+
         array_push($data, $keep);
         $udata[$prop]['keep'] = true;
     }
@@ -95,13 +101,32 @@ try {
             $clientName = $clients[$row['fkClientID']]['ClientShortName'];
         }
 
+        // Set a date which will not have any tasks after it
+        $keep_date = date_create('2099-01-01');
+
 // Map the tasks listed in $task_mapping into rows of the new array
         foreach ($task_mapping_list as $map) {
             $keep = array();
-            // Skip completed tasks
+
             extract($map);
 
-            if ($row[$key . '_Comp'] !== '0') {
+            // Determine date - overwrite if new date is lower than existing
+            $dueDate = date_create($row[$key]);
+            $keep['DueDate'] = $dueDate->format('Y-m-d');
+
+            $date_diff = intval(date_diff($keep_date, $dueDate)->format("%R%a"));
+
+            // Skip completed tasks and those with a later due date
+            if ($row[$key . '_Comp'] !== '0' || $date_diff >= 0) {
+                continue;
+            }
+
+            $keep_date = $dueDate;
+
+            // Status - based on relationship to today's date;
+            $keep['Status'] = get_status($dueDate);
+            // Suppress any tasks beyond radar
+            if ($keep['Status'] === 'Beyond Radar') {
                 continue;
             }
 
@@ -131,21 +156,15 @@ try {
                 $udata[$taskID]['keep'] = true;
             }
 
-            // Status - based on relationship to today's date;
-            $dueDate = date_create($row[$key]);
-            $keep['DueDate'] = $dueDate->format('Y-m-d');
-
-            $keep['Status'] = get_status($dueDate);
-            // Suppress any tasks beyond radar
-            if ($keep['Status'] === 'Beyond Radar') {
-                break;
+            // If this task replaces an existing task (because it has an
+            // earlier due date) pop the last element off before adding
+            $lastElement = end($data);
+            if ($lastElement !== null && $lastElement['Docket'] == $keep['Docket']) {
+                array_pop($data);
             }
-
             array_push($data, $keep);
+            reset($data);
 
-            // TEST: Only show the first outstanding task of a given campaign
-            // TODO: Re-sort by date (keep only earliest)
-            break;
         }
     }
 } catch (PDOException $e) {
@@ -160,29 +179,6 @@ $columns = array();
 // Using prescriptive filtered columns list for now
 $filtered_columns = $filtered_columns_default;
 
-/*
-  $filtered_columns = array();
-
-  // echo 'user_columns: <pre>' . print_r($user_columns, true) . '</pre>'; exit;
-
-
-
-  while (list ($col, $val) = each($data[0])) {
-  array_push($columns, $col);
-  if (!isset($columns_to_filter[$col])) {
-  array_push($filtered_columns, $col);
-  }
-  }
-
-  if (!empty($user_columns)) {
-  foreach ($user_columns as $col) {
-  array_push($columns, $col);
-  if (!isset($columns_to_filter[$col]) && !in_array($col, $filtered_columns)) {
-  array_push($filtered_columns, $col);
-  }
-  }
-  }
- */
 // Update user file (remove inactive jobs)
 $udata_keep = array();
 foreach ($udata as $prop => $dummy) {
