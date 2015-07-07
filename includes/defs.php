@@ -29,7 +29,8 @@ $task_mapping_list = [
     ['key' => 'SampleDataDue', 'value' => 'IPR'],
     ['key' => 'DataToPrime', 'value' => 'Instructions to Prime'],
     ['key' => 'FinalDataDue', 'value' => 'Final Data Due'],
-    ['key' => 'NetCounts', 'value' => 'Net Counts']
+    ['key' => 'NetCounts', 'value' => 'Net Counts'],
+    ['key' => 'MailDate', 'value' => 'Mail Date']
     
    ];
 

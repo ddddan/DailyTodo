@@ -39,16 +39,16 @@ $udata_all = file_get_contents($filename);
 $udata = json_decode($udata_all, true);
 
 // If a new task, determine last user task ID and increment
-$newTaskID = date('Y') * 1000 + 1 ;
+$newTaskID = date('Y') * 1000 + 1;
 if (!empty($newtask)) {
     foreach ($udata as $taskID => $content) {
         $tID = intval($taskID);
         if (isset($content['Type']) && $tID >= $newTaskID) {
-            echo 'Content found, $tID = ' . $tID . "\n"; 
+            echo 'Content found, $tID = ' . $tID . "\n";
             $newTaskID = $tID + 1;
         }
     }
-    
+
     echo 'newTaskID = ' . $newTaskID . "<br>\n";
 
     foreach ($newtask['data'] as $field => $value) {
@@ -56,6 +56,9 @@ if (!empty($newtask)) {
     }
 } else {
     // Update exisiting task with new details
+    if (!isset($newdetails['data'])) {
+        print_r($newdetails); exit;
+    }
     foreach ($newdetails['data'] as $field => $value) {
         $udata[$newdetails['TaskID']][$field] = $value;
     }

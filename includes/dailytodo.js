@@ -3,22 +3,6 @@
  */
 
 /**
- * sortByKey() - sort a JS object by key
- * 
- * @param {type} array : the array to sort
- * @param {type} key : the key to sort by
- * @param {type} sortDesc : sort descending
- * @returns {unresolved} : the sorted array
- */
-function sortByKey(array, key, sortDesc) {
-    return array.sort(function (a, b) {
-        var x = (sortDesc ? b[key] : a[key]);
-        var y = (sortDesc ? a[key] : b[key]);
-        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-    });
-}
-
-/**
  * AddDynamic() - Populates dynamic fields
  * 
  * @returns {undefined}
@@ -130,11 +114,14 @@ function saveTask() {
         GetPriorities();
     }
 
-    // AJAX request to save the data 
+    // AJAX request to save the data (actually SJAX :/) 
+    // TODO: Consider reworking to be asynchronous
     var xmlhttp = new XMLHttpRequest;
 
     xmlhttp.open('POST', 'put.php', false);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    
+    var updateClean = encodeURIComponent(ws.taskUpdate); // Allows special characters
 
     if (ws.taskUpdate.type === 'update') {
         xmlhttp.send('newdetails=' + JSON.stringify(ws.taskUpdate));
@@ -244,8 +231,8 @@ function GetPriorities() {
     var priorityList = [];
     p = 1;
     // This has to iterate through an array of linked lists, hence the nesting
-    for(i = 0; i < Math.ceil(priorityHash.length / 100); i++ ) {
-        for (var node = priorityHash[i*100]; !!node; node = priorityHash[node.next]) {
+    for (i = 0; i < Math.ceil(priorityHash.length / 100); i++) {
+        for (var node = priorityHash[i * 100]; !!node; node = priorityHash[node.next]) {
             tData[node.val].Priority = p.toString();
             priorityList[p++] = node.val;
         }

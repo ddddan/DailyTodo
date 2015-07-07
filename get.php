@@ -55,7 +55,7 @@ $db = db_connect() or die("Can't connect to database.");
 
 // Retrieve client list
 $clients = array();
-$query_clients = 'select pkClientID, ClientName, ClientShortName from tblClients where TimeFoxLookup is not null';
+$query_clients = 'select pkClientID, ClientName, ClientShortName from tblClients where Active = 1';
 try {
     $sth_clients = $db->prepare($query_clients);
     $sth_clients->execute();
@@ -105,6 +105,9 @@ try {
         $keep_date = date_create('2099-01-01');
 
 // Map the tasks listed in $task_mapping into rows of the new array
+        // Set $eBlast to false if Net Counts has a value
+        $eBlast = stristr($row['Project'], 'Eblast') || stristr($row['Project'], 'E-blast');
+
         foreach ($task_mapping_list as $map) {
             $keep = array();
 
@@ -119,6 +122,15 @@ try {
             // Skip completed tasks and those with a later due date
             if ($row[$key . '_Comp'] !== '0' || $date_diff >= 0) {
                 continue;
+            }
+
+            // If $eBlast is false, do not display mail date
+            if ($value == 'Mail Date') {
+                if (!$eBlast) {
+                    continue;
+                } else {
+                    $value = '[EBLAST] Mail Date';
+                }
             }
 
             $keep_date = $dueDate;
@@ -164,7 +176,6 @@ try {
             }
             array_push($data, $keep);
             reset($data);
-
         }
     }
 } catch (PDOException $e) {

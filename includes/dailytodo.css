@@ -6,6 +6,18 @@
     Author     : dmullin
 */
 
+@media print 
+{
+    .no-print, .noprint *
+    {
+        display: none !important;
+    }
+    
+    tr, td, th {
+        page-break-inside: avoid;
+    }
+}
+
 body {
     font-family: 'Segoe UI', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
@@ -78,7 +90,7 @@ tr.task /*td*/:hover {
 }
 
 .tr_even td {
-    /* background-color: #cef; */
+    background-color: #fee;
 }
 
 td {

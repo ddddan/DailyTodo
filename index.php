@@ -46,7 +46,7 @@ and open the template in the editor.
                 <h3>Submitting...</h3>
                 <img src="img/ajax-loader.gif" alt="(via AJAX)" />
             </div>
-            <div id="counts">
+            <div id="counts" class="no-print">
                 <table id="tcounts">
                     <thead>
                         <tr>

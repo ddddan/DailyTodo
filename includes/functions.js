@@ -18,6 +18,9 @@ Array.prototype.deepSortAlpha = function () {
         if (!isNumeric(a)) {
             a = a.toLowerCase();
             b = b.toLowerCase();
+        } else if (isNumeric(b)) { // Both are numeric
+            a = +a;
+            b = +b;
         }
         if (a == b)
             return 0;
