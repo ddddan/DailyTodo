@@ -84,6 +84,10 @@ th.colHeader:hover {
     cursor: pointer;
 }
 
+th.sortKey {
+    background-color: rgba(255,158, 49, .7);
+}
+
 tr.task /*td*/:hover {
     cursor: pointer;
     outline: rgba(239, 43, 45, .5) auto 5px;

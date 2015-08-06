@@ -16,7 +16,8 @@ window.sitescriptdata = {
     sortKeys: [
         'DueDate', 'Type', 'Docket', 'TaskName', 'Client', 'CampaignName', 'Priority'
     ],
-    currSortKey: 'DueDate',
+    currSortKey: '',
+    defaultSortKey: 'DueDate',
     priorityList: [],
     
     popupActive: false,

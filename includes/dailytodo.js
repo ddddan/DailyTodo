@@ -80,7 +80,16 @@ function LoadResults() {
             AddDynamic();
 
             // Display table
-            DisplayMasterTable('DueDate');
+            var sortKey = ws.currSortKey;
+            if(!sortKey) {
+                // Attempt to use cookie, otherwise use default
+                sortKey = document.cookie.replace(/(?:(?:^|.*;\s*)sortKey\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                if (!sortKey) {
+                    sortKey = ws.defaultSortKey;                    
+                }
+                ws.currSortKey = sortKey;
+            }
+            DisplayMasterTable(sortKey);
 
         }
     };
@@ -324,6 +333,10 @@ function DisplayMasterTable(sortKey, sortDesc, allData) {
             eTH.setAttribute('class', 'colHeader');
             eTH.addEventListener('click', cbColumnHeader);
         }
+        // Highlight current sort key
+        if (ws.taskfCols[i] === sortKey) {
+            eTH.addClassName('sortKey');
+        }
         eTRow.appendChild(eTH);
     }
 
@@ -491,8 +504,12 @@ function ClearTaskMessage(msg) {
 
 // CALLBACKS
 function cbColumnHeader(evt) {
+    // Display the table, sorted by the clicked column
     var col = evt.target.id.substring(3, 999);
     DisplayMasterTable(col);
+    // Set the column in a cookie for persistence
+    document.cookie = 'sortKey = ' + col;
+    
     // SaveStatus();
 }
 
@@ -557,7 +574,7 @@ function cbDetail(evt) {
 
     // Add Completed for user tasks
     var eCompleted = document.getElementById('detail_completed');
-    if (data.Type != 1 && data.Type != 4) {
+    if (data.Type !== 1 && data.Type !== 4) {
         if (!!data.Completed) {
             eCompleted.checked = true;
         }
@@ -737,7 +754,7 @@ function cbSubmitAddTask() {
     // Update object containing data
     var fields = document.getElementsByClassName('newtask_value');
     [].forEach.call(fields, function (el) {
-        var key = el.id.replace(/newtask_/, '')
+        var key = el.id.replace(/newtask_/, '');
         key = key.charAt(0).toUpperCase() + key.slice(1); // Uppercase first value of fieldname
         ws.taskUpdate.data[key] = el.value;
     });
