@@ -830,12 +830,12 @@ function cbRefresh() {
  * @returns {undefined}
  */
 function cbAutoRefresh(evt) {
-    var state = evt.target.value;
+    var state = evt.target.checked;
     window.sitescriptdata.autoRefresh = state;
     if (!state) {
-        window.clearInterval(ws.refreshTimer);
+        window.clearInterval(window.sitescriptdata.refreshTimer);
     } else {
-        ws.refreshTimer = window.setInterval(cbRefresh, 300000);
+        window.sitescriptdata.refreshTimer = window.setInterval(cbRefresh, 300000);
     }
 }
 
