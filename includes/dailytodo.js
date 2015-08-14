@@ -81,11 +81,11 @@ function LoadResults() {
 
             // Display table
             var sortKey = ws.currSortKey;
-            if(!sortKey) {
+            if (!sortKey) {
                 // Attempt to use cookie, otherwise use default
                 sortKey = document.cookie.replace(/(?:(?:^|.*;\s*)sortKey\s*\=\s*([^;]*).*$)|^.*$/, "$1");
                 if (!sortKey) {
-                    sortKey = ws.defaultSortKey;                    
+                    sortKey = ws.defaultSortKey;
                 }
                 ws.currSortKey = sortKey;
             }
@@ -129,7 +129,7 @@ function saveTask() {
 
     xmlhttp.open('POST', 'put.php', false);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    
+
     var updateClean = encodeURIComponent(ws.taskUpdate); // Allows special characters
 
     if (ws.taskUpdate.type === 'update') {
@@ -509,7 +509,7 @@ function cbColumnHeader(evt) {
     DisplayMasterTable(col);
     // Set the column in a cookie for persistence
     document.cookie = 'sortKey = ' + col;
-    
+
     // SaveStatus();
 }
 
@@ -823,6 +823,21 @@ function cbRefresh() {
     }
 }
 
+/**
+ * cbAutoRefresh - enable or disable auto-refresh
+ * 
+ * @param {object} evt - The triggering event
+ * @returns {undefined}
+ */
+function cbAutoRefresh(evt) {
+    var state = evt.target.value;
+    window.sitescriptdata.autoRefresh = state;
+    if (!state) {
+        window.clearInterval(ws.refreshTimer);
+    } else {
+        ws.refreshTimer = window.setInterval(cbRefresh, 300000);
+    }
+}
 
 
 window.onload = function () {
@@ -835,14 +850,11 @@ window.onload = function () {
     // Load and display results
     LoadResults();
 
-    // Add event handler for "Add Task" and "Refresh" Buttons
+    // Add event handler for "Add Task" and "Refresh" Buttons as well as the Auto-refresh checkbox
     document.getElementById('add_task').addEventListener('click', cbAddTask);
     document.getElementById('refresh').addEventListener('click', cbRefresh);
+    document.getElementById('autoRefresh').addEventListener('click', cbAutoRefresh);
 
-    // Add timed refresh
+    // Add timed refresh (5 minutes)
     ws.refreshTimer = window.setInterval(cbRefresh, 300000);
-
-
-}
-;
-
+};

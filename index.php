@@ -77,6 +77,11 @@ if (filter_input(INPUT_GET, 'debug') === 'dm20141027') {
                                 <a id="refresh" href="#" class="button grey">Refresh</a>
                             </td>
                         </tr>
+                        <tr id="checkboxRow">
+                            <td colspan="100%">
+                                <input type="checkbox" name="autoRefresh" id="autoRefresh" checked="true">Auto-refresh
+                            </td>
+                        </tr>
                         <tr id="timeRow">
                             <td colspan="100%">
                                 <p class="timestamp">Last refresh: <?php echo date('Y-m-d H:i:s'); ?></p>
