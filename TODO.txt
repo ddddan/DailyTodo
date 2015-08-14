@@ -1,0 +1,6 @@
+TODO - Personal
+1. Allow creation of projects
+2. Allow creation of clients
+3. Allow editing of task parameters after the fact
+4. Implement Steps
+

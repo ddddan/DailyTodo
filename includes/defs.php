@@ -19,7 +19,7 @@ $task_types = [
     [],
     ['symbol' => 'A', 'type_name' => 'Task Type A', 
         'steps' => null],
-    ['symbol' => 'B', 'type_name' => 'Task Type A', 
+    ['symbol' => 'B', 'type_name' => 'Task Type B', 
         'steps' => [
             [
                 'name' => 'Step 1',
@@ -48,10 +48,10 @@ $task_types = [
 // Establish the default display order of the columns
 $filtered_columns_default = [
     'Type',
-    'TaskName',
-    'SubprojectName',
-    'ContactName',
-    'ProjectName',
+    'Task',
+    'Subproject',
+    'Client',
+    'Project',
     'DueDate',
     'Status',
     'Priority',

@@ -14,7 +14,7 @@ window.sitescriptdata = {
     SAVE_PATH: '<?php echo SAVE_PATH; ?>',
     SAVE_FILE: '<?php echo SAVE_FILE; ?>',
     sortKeys: [
-        'DueDate', 'Type', 'Docket', 'TaskName', 'Client', 'CampaignName', 'Priority'
+        'DueDate', 'Type', 'Subproject', 'Task', 'Client', 'Project', 'Priority'
     ],
     currSortKey: '',
     defaultSortKey: 'DueDate',

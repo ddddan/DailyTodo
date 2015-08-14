@@ -12,9 +12,6 @@ function AddDynamic() {
     // Task types
     var e = document.getElementById('newtask_type');
     for (var i = 1; i < ws.taskTypes.length; i++) {
-        if (!!ws.taskTypes[i].in_cp) {
-            continue;
-        }
         var eOption = document.createElement('option');
         eOption.setAttribute('value', i);
         eOption.textContent = ws.taskTypes[i].type_name;
@@ -22,7 +19,7 @@ function AddDynamic() {
     }
     // Client names
     // Create list
-    var clientList = [{value: 'Internal', name: 'Blakely House'}]; // Default is internal
+    var clientList = [{value: 'Internal', name: 'Personal'}]; // Default is internal
     for (i in ws.clients) {
         clientList.push({value: ws.clients[i].ClientShortName, name: ws.clients[i].ClientName});
     }
@@ -71,7 +68,7 @@ function LoadResults() {
 
             // Set lastUTaskID - the last user task id to increment when creating tasks
             for (var i = 0; i < ws.taskData.length; i++) {
-                if (!ws.taskTypes[ws.taskData[i].Type].in_cp && ws.taskData[i].TaskID > ws.lastUTaskID) {
+                if (ws.taskData[i].TaskID > ws.lastUTaskID) {
                     ws.lastUTaskID = ws.taskData[i].TaskID;
                 }
             }

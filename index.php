@@ -149,7 +149,7 @@ if (filter_input(INPUT_GET, 'debug') === 'dm20141027') {
                                 </tr>
                                 <tr>
                                     <td class="addtask_label">
-                                        <label for="newtask_docket">Docket:</label>
+                                        <label for="newtask_docket">Subproject:</label>
                                     </td>
                                     <td class="addtask_value">
                                         <input type="text" id="newtask_docket" name="newtask_docket" class="newtask_value">
