@@ -10,6 +10,8 @@ define('MAX_DAYS_OUT', 30);
 define('SAVE_PATH', 'U:\Projects\dailytodo');
 define('SAVE_FILE', 'dailytodo_status.json');
 
+define('DEFAULT_USER', 'dmullin');
+
 
 $columns_to_filter = array(
     'TaskID' => 1
@@ -17,32 +19,33 @@ $columns_to_filter = array(
 
 $task_types = [
     [],
-    ['symbol' => 'A', 'type_name' => 'Task Type A', 
+    ['symbol' => 'W', 'type_name' => 'Web Programming', 
         'steps' => null],
-    ['symbol' => 'B', 'type_name' => 'Task Type B', 
-        'steps' => [
-            [
-                'name' => 'Step 1',
-                'days_out' => -6
-                ],
-            [
-                'name' => 'Step 2',
-                'days_out' => -5
-                ],
-            [
-                'name' => 'Step 3',
-                'days_out' => -3
-                ],
-            [
-                'name' => 'Step 4',
-                'days_out' => -1
-                ],
-            [
-                'name' => 'Step 5',
-                'days_out' => 0
-                ],
-        ]],
+    ['symbol' => 'M', 'type_name' => 'Music Production', 
+        'steps' => null],
+    ['symbol' => 'R', 'type_name' => 'Research',
+        'steps' => null],
+    ['symbol' => 'H', 'type_name' => 'Home-related',
+        'steps' => null],
+    ['symbol' => 'D', 'type_name' => 'Documentation',
+        'steps' => null],
+    ['symbol' => 'V', 'type_name' => 'Video Production',
+        'steps' => null],
+    ['symbol' => 'C', 'type_name' => 'Communication',
+        'steps' => null],
+    ['symbol' => 'O', 'type_name' => 'Organizational',
+        'steps' => null]
+];
 
+$default_clients = [
+    ['ClientShortName' => 'IPG', ClientName => 'IPG'],
+    ['ClientShortName' => 'Home', ClientName => 'Home'],
+    ['ClientShortName' => 'Hopeward', ClientName => 'Hopeward'],
+    ['ClientShortName' => 'RoatanAlive', ClientName => 'Roatan Alive'],
+    ['ClientShortName' => 'WBC', ClientName => 'WBC'],
+    ['ClientShortName' => 'Blakely', ClientName => 'Blakely'],
+    ['ClientShortName' => 'OtherWork', ClientName => 'Other Work']
+    
 ];
 
 // Establish the default display order of the columns

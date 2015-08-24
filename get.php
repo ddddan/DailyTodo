@@ -18,6 +18,10 @@ $data = array(); // Will contain the final data set
 $user_info = explode('\\', filter_input(INPUT_SERVER, 'REMOTE_USER'));
 $user = end($user_info);
 
+if (empty($user)) {
+    $user = DEFAULT_USER;
+}
+
 // Check for Raw parameter - will just dump unfiltered results
 $dump_raw = filter_input(INPUT_GET, 'dumpraw');
 if (!empty($dump_raw) && $dump_raw != 'raw') {
@@ -74,10 +78,14 @@ file_put_contents('udata/' . $user, $udata_string);
 
 // Output the data (for reading by AJAX)
 
+// TODO: Add Dynamic client and task functionality
+$clients = $default_clients;
+
 $results_array = array(
     'data' => $data,
     'columns' => $columns,
-    'filtered_columns' => $filtered_columns
+    'filtered_columns' => $filtered_columns,
+    'clients' => $clients
 );
 
 echo json_encode($results_array);
